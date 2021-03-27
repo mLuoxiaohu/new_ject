@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8797cf738cfcb7295873dfea137bb33b",
+    "content-hash": "6aebaad52de619f41dcf2053a0a77b1e",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -635,17 +635,17 @@
             "time": "2018-09-29T18:48:56+00:00"
         },
         {
-            "name": "kylekatarnls/update-helper",
-            "version": "1.2.1",
+            "name": "kylekatarnls/laravel-carbon-2",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/kylekatarnls/update-helper.git",
-                "reference": "429be50660ed8a196e0798e5939760f168ec8ce9"
+                "url": "https://github.com/kylekatarnls/laravel-carbon-2.git",
+                "reference": "0b68e0454d8e17b31cc42038dda8b7faef8055b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kylekatarnls/update-helper/zipball/429be50660ed8a196e0798e5939760f168ec8ce9",
-                "reference": "429be50660ed8a196e0798e5939760f168ec8ce9",
+                "url": "https://api.github.com/repos/kylekatarnls/laravel-carbon-2/zipball/0b68e0454d8e17b31cc42038dda8b7faef8055b3",
+                "reference": "0b68e0454d8e17b31cc42038dda8b7faef8055b3",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -655,22 +655,13 @@
                 ]
             },
             "require": {
-                "composer-plugin-api": "^1.1.0 || ^2.0.0",
-                "php": ">=5.3.0"
+                "nesbot/carbon": "^2.0.0-beta.2"
             },
-            "require-dev": {
-                "codeclimate/php-test-reporter": "dev-master",
-                "composer/composer": "2.0.x-dev || ^2.0.0-dev",
-                "phpunit/phpunit": ">=4.8.35 <6.0"
-            },
-            "type": "composer-plugin",
-            "extra": {
-                "class": "UpdateHelper\\ComposerPlugin"
-            },
+            "type": "library",
             "autoload": {
-                "psr-0": {
-                    "UpdateHelper\\": "src/"
-                }
+                "files": [
+                    "src/Carbon.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -678,39 +669,30 @@
             ],
             "authors": [
                 {
-                    "name": "Kyle",
-                    "email": "kylekatarnls@gmail.com"
+                    "name": "kylekatarnls",
+                    "homepage": "https://github.com/kylekatarnls"
                 }
             ],
-            "description": "Update helper",
-            "funding": [
-                {
-                    "url": "https://github.com/kylekatarnls",
-                    "type": "github"
-                },
-                {
-                    "url": "https://opencollective.com/Carbon",
-                    "type": "open_collective"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/nesbot/carbon",
-                    "type": "tidelift"
-                }
+            "description": "Carbon 2 adapter for Laravel",
+            "homepage": "http://carbon.nesbot.com",
+            "keywords": [
+                "carbon",
+                "laravel"
             ],
-            "time": "2020-04-07T20:44:10+00:00"
+            "time": "2018-08-17T09:41:47+00:00"
         },
         {
             "name": "laravel/framework",
-            "version": "v5.6.40",
+            "version": "v5.6.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "5ceadf91f13be89a3338c3d4166a4676272a23bf"
+                "reference": "fcdbc791bc3e113ada38ab0a1147141fb9ec2b16"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/5ceadf91f13be89a3338c3d4166a4676272a23bf",
-                "reference": "5ceadf91f13be89a3338c3d4166a4676272a23bf",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/fcdbc791bc3e113ada38ab0a1147141fb9ec2b16",
+                "reference": "fcdbc791bc3e113ada38ab0a1147141fb9ec2b16",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -727,7 +709,7 @@
                 "ext-openssl": "*",
                 "league/flysystem": "^1.0.8",
                 "monolog/monolog": "~1.12",
-                "nesbot/carbon": "1.26.*",
+                "nesbot/carbon": "^1.24.1",
                 "php": "^7.1.3",
                 "psr/container": "~1.0",
                 "psr/simple-cache": "^1.0",
@@ -842,7 +824,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2020-04-14T14:16:50+00:00"
+            "time": "2018-04-09T16:07:04+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -1298,16 +1280,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "1.26.6",
+            "version": "2.16.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "c6820f814496d71da7498d423427e6193d1f57c9"
+                "reference": "373d9f0d58651af366435148c39beb702c2b7ef4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/c6820f814496d71da7498d423427e6193d1f57c9",
-                "reference": "c6820f814496d71da7498d423427e6193d1f57c9",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/373d9f0d58651af366435148c39beb702c2b7ef4",
+                "reference": "373d9f0d58651af366435148c39beb702c2b7ef4",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -1317,25 +1299,29 @@
                 ]
             },
             "require": {
-                "kylekatarnls/update-helper": "^1.1",
-                "php": ">=5.3.9",
-                "symfony/translation": "~2.6 || ~3.0 || ~4.0"
+                "ext-json": "*",
+                "php": "^7.1.8 || ^8.0",
+                "symfony/translation": "^3.4 || ^4.0"
             },
             "require-dev": {
-                "composer/composer": "^1.2",
-                "friendsofphp/php-cs-fixer": "~2",
-                "phpunit/phpunit": "^4.8.35 || ^5.7"
+                "friendsofphp/php-cs-fixer": "^2.14 || ^3.0",
+                "kylekatarnls/multi-tester": "^0.1",
+                "phpmd/phpmd": "^2.6",
+                "phpstan/phpstan": "^0.10.8",
+                "phpunit/phpunit": "^7.5 || ^8.0",
+                "squizlabs/php_codesniffer": "^3.4"
             },
-            "bin": [
-                "bin/upgrade-carbon"
-            ],
             "type": "library",
             "extra": {
-                "update-helper": "Carbon\\Upgrade"
+                "laravel": {
+                    "providers": [
+                        "Carbon\\Laravel\\ServiceProvider"
+                    ]
+                }
             },
             "autoload": {
                 "psr-4": {
-                    "": "src/"
+                    "Carbon\\": "src/Carbon/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1356,7 +1342,7 @@
                 "datetime",
                 "time"
             ],
-            "time": "2019-06-03T15:42:58+00:00"
+            "time": "2019-04-06T17:09:23+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -6284,7 +6270,14 @@
             "time": "2021-03-09T10:59:23+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "alias": "1.34.0",
+            "alias_normalized": "1.34.0.0",
+            "version": "2.16.3.0",
+            "package": "nesbot/carbon"
+        }
+    ],
     "minimum-stability": "dev",
     "stability-flags": {
         "tymon/jwt-auth": 20
