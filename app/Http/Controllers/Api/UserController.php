@@ -38,7 +38,6 @@ class UserController extends BaseController
 //    private $site_url; #获取根url
     private $articleStore;
     private $article;
-    private $AvatarMax=12;
 
     public function __construct(User $user,
                                 Factory $auth,
@@ -51,7 +50,6 @@ class UserController extends BaseController
         $this->user = $user;
         $this->article=$article;
         $this->articleStore=$articleStore;
-//        $this->site_url = $url::previous() . '/';
     }
 
     /**
@@ -215,21 +213,21 @@ class UserController extends BaseController
     {
         try {
             $param = [
-                "username" => "required",
+                "mobile" => "required",
                 "password" => "required",
 //                'code' => "required",
 //                'key' => "required",
             ];
             $message = [
-                "username.required" => "用户名不能为空",
+                "mobile.required" => "手机号不能为空",
                 "password.required" => "密码不能为空",
 //                'code.required' => '请输入验证码',
 //                'key.required' => 'key必填',
             ];
             if (!$this->BaseValidator($request, $param, $message, $error)) return $this->_error($error);
             $check = $this->getParams($request);
-//            if (Cache::get($check['key']) != $check['code']) return $this->_error(self::CODE_ERROR);
-//            Cache::forget($check['key']); #验证成功删除缓存
+//            if (Cache::get($check['mobile']) != $check['code']) return $this->_error(self::CODE_ERROR);
+//            Cache::forget($check['mobile']); #验证成功删除缓存
             unset($check['code'],$check['key']);
             $auth = $this->authInit();
             $this->jwt->setSecret(config('jwt.' . $this->prefix . '_secret')); #切换认证secret模块
@@ -259,30 +257,26 @@ class UserController extends BaseController
      * @msg 以下是修改登陆密码使用
      * @param password 要修改的密码
      * @param old_password 旧密码
+     * @param password_confirm 确认密码
      * @return \Illuminate\Http\JsonResponse
      */
     public function userUpdate(Request $request)
     {
         try {
             $param = [
-                'qq' => 'regex:/^\d{5,11}$/',
 //                "mobile" => "regex:/^1[345789][0-9]{9}$/",
                 'password' => 'min:6|max:14',
-                'alipay' => 'min:6|max:18',
-                'wx' => 'min:6|max:18',
-                'signature'=>'min:6|max:40'
-//                'avatar'
-//                'avatar' => 'mimes:jpeg,bmp,png,jpg,gif',
+                'signature'=>'min:6|max:40',
+                'password_confirm'=>'same:password',
+                'avatar' => 'mimes:jpeg,bmp,png,jpg,gif',
             ];
             $message = [
                 "password.min" => "密码不能小于6位",
                 "password.max" => "密码不能大于18位",
-                "wx.min" => "微信账号不能小于6位",
-                "wx.max" => "微信账号不能大于18位",
+                'password_confirm'=>'确认密码和新密码不一致',
                 "signature.min" => "个性签名不能小于6位",
                 "signature.max" => "个性签名不能大于40位",
-                "qq.regex" => "QQ号格式不正确",
-//                'avatar.mimes' => '只支持图片:jpeg,bmp,png,jpg,gif 格式!'
+                'avatar.mimes' => '只支持图片:jpeg,bmp,png,jpg,gif 格式!'
             ];
             if (!$this->BaseValidator($request, $param, $message, $error)) return $this->_error($error);
             $input = $this->getParams($request);
@@ -291,7 +285,7 @@ class UserController extends BaseController
             if (isset($input['avatar'])) {
                 $fileImg = $this->OneUploadFile($input['avatar']);
                 if ($fileImg['code'] != 200) return $this->_error($fileImg['msg']);
-                $input['avatar'] = $fileImg['name'] ?? '/default.png';
+                $input['avatar'] = $fileImg['name'] ?? '/default0.png';
             }
             #删除旧图片
             if (isset($input['avatar'])) {
@@ -333,7 +327,7 @@ class UserController extends BaseController
     }
 
     /**
-     * 忘记密码用手机号找回
+     * @desc 忘记密码用手机号找回
      * @method post
      * @route /forget
      * @param mobile 手机号
@@ -345,21 +339,20 @@ class UserController extends BaseController
     {
         try {
             $param = [
-                "username" => "required|regex:/^[a-z0-9A-Z]{9,12}$/",
-                'password' => 'min:6|max:14',
-                'code' => 'required',
+                "mobile" => ['required','regex:/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199|(147))\d{8}$/'],
+                'password' =>['min:6','max:14'],
+                'code' => ['required'],
             ];
             $message = [
                 "password.min" => "密码不能小于6位",
                 "password.max" => "密码不能大于14位",
-                'username.regex' => '手机号格式不正确',
-                'username.required' => '账号必填',
+                'mobile.regex' => '手机号格式不正确',
+                'mobile.required' => '账号必填',
                 'code.required' => '请输入短信验证码'
             ];
             if (!$this->BaseValidator($request, $param, $message, $error)) return $this->_error($error);
             $input = $this->getParams($request);
-
-            if (!isset($input['username'])) return $this->_error(self::INPUT_MOBILE);
+            if (!isset($input['mobile'])) return $this->_error(self::INPUT_MOBILE);
             if (!isset($input['code'])) return $this->_error(self::INPUT_CODE);
             $mobile = $input['mobile'];
             if (Cache::get($mobile) != $input['code']) return $this->_error(self::CODE_ERROR);
@@ -376,13 +369,13 @@ class UserController extends BaseController
     }
 
     /**
-     * 获取code码
+     * 获取短信code码
      * @method GET
-     * @route getcode
+     * @route mobile_code
      * @param $mobile 手机号
      * @return msg
      */
-    public function getCodeMobile(Request $input)
+    public function MobileCode(Request $input)
     {
         try {
             $param = [
@@ -414,10 +407,12 @@ class UserController extends BaseController
     }
 
     /**
-     * 获取验证码图片
+     * @desc 获取验证码图片
+     * @route api/image_code
+     * @method GET
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getCode()
+    public function ImageCode()
     {
         try {
             $phrase = new PhraseBuilder;
@@ -456,11 +451,9 @@ class UserController extends BaseController
     /**
      * #用户注册逻辑
      * @route /register
-     * @param username 账号
+     * @param mobile 手机号
      * @param password 密码
      * @param code 手机验证码
-     * @param key 验证码key
-     * @param invite 邀请码{可选}
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -469,35 +462,29 @@ class UserController extends BaseController
         DB::beginTransaction();
         try {
             $param = [
-                "username" => ['required','unique:users','regex:/^[a-z\d_]{6,14}$/i'],
-                "nickname" => "required|unique:users",
+                "mobile" => ['required','unique:users','regex:/^[a-z\d_]{6,14}$/i'],
                 "password" => ['required','regex:/^[a-z\d_]{6,14}$/i'],
                 "code" => "required",
-                "key"=> "required"
             ];
             $message = [
-                "nickname.unique" => "此昵称已被使用",
-                "username.unique" => '用户已注册',
-                "nickname.required" => "请填入昵称",
-                "username.required" => "手机号不能为空",
-                'username.regex' => '用户名只能为数字母6~14位',
+                "mobile.unique" => '此手机号已注册',
+                "mobile.required" => "手机号不能为空",
                 "password.required" => "密码不能为空",
                 'password.regex'=>'密码只能为只能为数字母6~14位',
                 'code.required' => '请输入验证码',
-                'key.required' => 'key必填',
             ];
             if (!$this->BaseValidator($request, $param, $message, $error)) return $this->_error($error);
             $input = $this->getParams($request);
-            if (Cache::get($input['key']) != $input['code']) return $this->_error(self::CODE_ERROR);
-            Cache::forget($input['key']); #验证成功删除缓存
+            if (Cache::get($input['mobile']) != $input['code']) return $this->_error(self::CODE_ERROR);
+            Cache::forget($input['mobile']); #验证成功删除缓存
 //            if (isset($input['invite'])) {1011
 //                $obj = $this->code->where('code', trim($input['invite']))->first(['uid']);
 //                if (empty($obj)) return $this->_error(self::INVITE_CODE_ERROR);
 //                $input['pid'] = $obj->uid;
 //            }
             #写入用户数据
-//            $end_str = substr($mobile, 7, strlen($mobile));
-//            $input['nickname'] = '手机用户：@' . $end_str;
+            $end_str = substr($input['mobile'], 7, strlen($input['mobile']));
+            $input['nickname'] = '手机用户：@' . $end_str;
             $input['login_ip'] = $request->getClientIp();
             $input['password'] = Hash::make(strtolower($input['password'])); #laravel Auth验证密码必须hash密码
 //            $input['avatar'] = $image->imageUrl(300, 300);

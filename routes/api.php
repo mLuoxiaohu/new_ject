@@ -26,8 +26,10 @@ Route::get('index', "IndexController@index");
 Route::post('login', "UserController@login");
 #注册
 Route::post('register', "UserController@register");
-#获取验证码
-Route::get('get_code', "UserController@getCode");
+#获取短信验证码
+Route::get('mobile_code', "UserController@MobileCode");
+#获取图片验证码
+Route::get('image_code', "UserController@ImageCode");
 #忘记密码
 Route::post('forget', "UserController@forgetPwd");
 #上传图片
@@ -45,6 +47,7 @@ Route::get('bolg_detail/{id}', "UserController@bolgDetail");
 Route::get('blog_comment/{id}', "ArticleController@blog_comment");
 #他的帖子
 Route::get('blog_article/{id}', "ArticleController@blog_article");
+
 Route::group([
     'middleware' => 'auth:api'
 ], function () {

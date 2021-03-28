@@ -9,7 +9,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
-    protected $dateFormat = 'U';  #是否为时间戳
+//    protected $dateFormat = 'U';  #是否为时间戳
     const CREATED_AT = 'create_time';
     const UPDATED_AT = 'update_time';
     /**
@@ -18,8 +18,8 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'nickname','username','sex','password','avatar','state','create_time',
-        'update_time','is_article','signature','login_ip','login_time','login_secret','coin'
+        'nickname','mobile','sex','password','avatar','state','create_time',
+        'update_time','signature','login_ip','login_time','coin'
     ];
 
 
@@ -29,17 +29,7 @@ class User extends Authenticatable implements JWTSubject
     public $man=[
         1=>'未知',2=>'男',3=>'女'
     ];
-    public $article=[
-        1=>'允许发帖',2=>'禁止发帖'
-    ];
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'login_ip'
-    ];
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -49,18 +39,6 @@ class User extends Authenticatable implements JWTSubject
         'password','update_time'
     ];
 
-   public function article(){
-       return $this->hasMany(Article::class,'uid','id');
-   }
-
-    public function articleStore(){
-        return $this->hasMany(UserArticleStore::class,'uid','id');
-   }
-
-    public function getLoginTimeAttribute()
-    {
-        return date('Y-m-d H:i:s', $this->attributes['update_time']);
-    }
 
     public function getSexAttribute(){
         return $this->man[$this->attributes['sex']];
@@ -71,17 +49,6 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
-
-
-    public function getUpdateTimeAttribute()
-    {
-        return date('Y-m-d H:i:s', $this->attributes['update_time']);
-    }
-
-    public function getCreateTimeAttribute()
-    {
-        return date('Y-m-d H:i:s', $this->attributes['create_time']);
-    }
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
