@@ -255,7 +255,7 @@ class UserController extends BaseController
      * @msg 账号密码登陆
      * @route api/login
      * @method post
-     * @param $username 账号
+     * @param $mobile 账号
      * @param $password 密码
      * @param $code 图片验证码
      * @param $key 验证码key
@@ -305,16 +305,16 @@ class UserController extends BaseController
      * @mothod put
      * @msg 以下是修改资料用的参数
      * @param Request $request
-     * @param avatar  头像   可选
-     * @param nickname  昵称 可选
-     * @param signature 个性签名 可选
+     * @param avatar   file 头像   可选
+     * @param nickname  string 昵称 可选
+     * @param signature string 个性签名 可选
      * @msg 以下是修改登陆密码使用{修改密码时以下三个参数必填}
-     * @param password 要修改的密码 可选
-     * @param old_password 旧密码 可选
-     * @param confirm_password 确认密码 可选
-     * @msg 以下是修改手机号传参
-     * @param mobile 新手机号
-     * @param code 验证码
+     * @param password  string 要修改的密码 可选
+     * @param old_password  string 旧密码 可选
+     * @param confirm_password  string 确认密码 可选
+     * @msg 以下是修改手机号传参 注 修改手机号需先请求 check_old_mobile 接口认证
+     * @param mobile  int 新手机号
+     * @param code  int 验证码
      * @return \Illuminate\Http\JsonResponse
      */
     public function userUpdate(Request $request)
@@ -429,10 +429,10 @@ class UserController extends BaseController
     }
 
     /**
-     * @desc 修改密码验证旧手机
+     * @desc 修改手机验证旧手机接口
      * @param mobile 旧手机号
      * @param code 验证码
-     * @route api/check_old_mobile
+     * @route /check_old_mobile
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -499,7 +499,7 @@ class UserController extends BaseController
 
     /**
      * @desc 获取验证码图片
-     * @route api/image_code
+     * @route /image_code
      * @method GET
      * @return \Illuminate\Http\JsonResponse
      */
