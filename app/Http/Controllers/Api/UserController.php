@@ -489,7 +489,8 @@ class UserController extends BaseController
 
             }
             $content = "【柒柒科技】您的验证码：{$code} 有效期60秒请尽快使用。";
-            return $this->_success([], $content);
+
+            return $this->_success(['code'=>$code], $content);
             #end:结束
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
