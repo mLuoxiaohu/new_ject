@@ -4,7 +4,6 @@ namespace App\Http\Model;
 use App\Http\Controllers\BaseController;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\URL;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 class User extends Authenticatable implements JWTSubject
 {
@@ -36,7 +35,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'password','update_time'
+        'password','update_time','login_fail'
     ];
 
 

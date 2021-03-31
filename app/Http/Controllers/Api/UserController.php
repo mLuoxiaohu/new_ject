@@ -5,9 +5,8 @@ namespace App\Http\Controllers\Api;
 
 
 use App\Http\Controllers\BaseController;
-use App\Http\Model\Article;
+use App\Http\Model\Opinion;
 use App\Http\Model\User;
-use App\Http\Model\UserArticleStore;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Contracts\Auth\Factory;
@@ -35,22 +34,76 @@ class UserController extends BaseController
     private $auth;
     private $prefix = 'api';
     private $jwt;
-//    private $site_url; #获取根url
-    private $articleStore;
-    private $article;
 
     public function __construct(User $user,
                                 Factory $auth,
-                                JWT $JWTAuth,
-                                UserArticleStore $articleStore,Article $article
+                                JWT $JWTAuth
+
     )
     {
         $this->jwt = $JWTAuth;
         $this->auth = $auth;
         $this->user = $user;
-        $this->article=$article;
-        $this->articleStore=$articleStore;
+
     }
+     /********************留言**************/
+    /**
+     * @desc 用户留言
+     * @route api/leave_message
+     * @param title 标题
+     * @param content 内容
+     * @return \Illuminate\Http\JsonResponse
+     */
+   public function leave_message(Opinion $opinion,Request $request){
+       try{
+           $param = [
+               "name" => "required|min:1|max:14",
+               "content" => "required|min:1",
+           ];
+           $message = [
+               "name.required" => "名称不能为空",
+               "name.unique" => '名称已存在',
+               "name.min" => '名称不能小于1个字符，大于14个字符',
+               "name.max" => '名称不能小于1个字符，大于14个字符',
+               'content.required' => '内容不能为空',
+               "content.min" => "内容不能小于1个字符",
+           ];
+           if (!$this->BaseValidator($request, $param, $message, $error)) return $this->_error($error);
+           $input = $this->getParams($request);
+           $input['nickname'] = $this->replaceDox($input['name']);
+           $input['content'] = $this->replaceDox($input['content']);
+           $input['avatar']='default'.rand(0,13).'.png';
+           $result= $opinion->create($input);
+           if($result) return $this->_success();
+           return $this->_error();
+       } catch (\Exception $ex) {
+           return $this->_error($ex->getMessage());
+       }
+   }
+
+    /**
+     * @desc 用户留言列表
+     * @method GET
+     * @param num 每页多少条 default 10 可选
+     * @param page 当前页  default 1   可选
+     * @route /api/leave_message_list
+     * @return \Illuminate\Http\JsonResponse
+     */
+   public function leave_message_list(Opinion $opinion,Request $request){
+       try{
+           $num=$request->get('num',10);
+           $result= $opinion->with(['children'=>function($sql){
+               $sql->where('state','2');
+           }])
+               ->where(['state'=>'2','pid'=>0])->paginate($num,['nickname','avatar','id','content','create_time']);
+           if($result) return $this->_success($result);
+           return $this->_error();
+       } catch (\Exception $ex) {
+           return $this->_error($ex->getMessage());
+       }
+   }
+
+
 
     /**
      * @desc 获取头像
@@ -204,7 +257,7 @@ class UserController extends BaseController
      * @method post
      * @param $username 账号
      * @param $password 密码
-     * @param $code 验证码
+     * @param $code 图片验证码
      * @param $key 验证码key
      * @param Request $request
      * @return user obj
@@ -226,8 +279,8 @@ class UserController extends BaseController
             ];
             if (!$this->BaseValidator($request, $param, $message, $error)) return $this->_error($error);
             $check = $this->getParams($request);
-//            if (Cache::get($check['mobile']) != $check['code']) return $this->_error(self::CODE_ERROR);
-//            Cache::forget($check['mobile']); #验证成功删除缓存
+//            if (Cache::get($check['key']) != $check['code']) return $this->_error(self::CODE_ERROR);
+//            Cache::forget($check['key']); #验证成功删除缓存
             unset($check['code'],$check['key']);
             $auth = $this->authInit();
             $this->jwt->setSecret(config('jwt.' . $this->prefix . '_secret')); #切换认证secret模块
@@ -238,7 +291,7 @@ class UserController extends BaseController
             $user = $auth->user();
             if ($user->state == '2') return $this->_error(self::PROHIBIT_LOGIN);
             $user->login_ip = $request->getClientIp();
-            $user->login_time = Carbon::now();
+            $user->login_time = Carbon::now()->toDateTimeString();
             $user->save();
             return $this->_success(['token' => $this->TokenHeader . $token, 'user' => $auth->user(), 'token_type' => 'Authorization']);
         } catch (\Exception $ex) {
@@ -250,30 +303,34 @@ class UserController extends BaseController
      * 修改个人信息
      * @route /change
      * @mothod put
+     * @msg 以下是修改资料用的参数
      * @param Request $request
-     * @param avatar 头像   可选
-     * @param nickname  真实姓名 可选
+     * @param avatar  头像   可选
+     * @param nickname  昵称 可选
      * @param signature 个性签名 可选
-     * @msg 以下是修改登陆密码使用
-     * @param password 要修改的密码
-     * @param old_password 旧密码
-     * @param password_confirm 确认密码
+     * @msg 以下是修改登陆密码使用{修改密码时以下三个参数必填}
+     * @param password 要修改的密码 可选
+     * @param old_password 旧密码 可选
+     * @param confirm_password 确认密码 可选
+     * @msg 以下是修改手机号传参
+     * @param mobile 新手机号
+     * @param code 验证码
      * @return \Illuminate\Http\JsonResponse
      */
     public function userUpdate(Request $request)
     {
         try {
             $param = [
-//                "mobile" => "regex:/^1[345789][0-9]{9}$/",
+                "mobile" => "regex:/^1[345789][0-9]{9}$/",
                 'password' => 'min:6|max:14',
                 'signature'=>'min:6|max:40',
-                'password_confirm'=>'same:password',
+                'confirm_password'=>'same:password',
                 'avatar' => 'mimes:jpeg,bmp,png,jpg,gif',
             ];
             $message = [
                 "password.min" => "密码不能小于6位",
                 "password.max" => "密码不能大于18位",
-                'password_confirm'=>'确认密码和新密码不一致',
+                'confirm_password.same'=>'确认密码和新密码不一致',
                 "signature.min" => "个性签名不能小于6位",
                 "signature.max" => "个性签名不能大于40位",
                 'avatar.mimes' => '只支持图片:jpeg,bmp,png,jpg,gif 格式!'
@@ -295,10 +352,14 @@ class UserController extends BaseController
             if (count($input) <= 0) return $this->_error(self::NOT_CHANGE_CONTENT);
             #手机修改
             if (isset($input['mobile'])) {
+                if(Cache::get($id) == null || Cache::get($id) !=1) return $this->_error(self::OLD_MOBILE_EXPIRED);
                 $mobile = $input['mobile'];
+                $is_mobile=$this->user->where('id','!=',$id)->where('mobile',$mobile)->value('id');
+                if($is_mobile) return $this->_error(self::MOBILE_EXISTS);
                 if (!isset($input['code'])) return $this->_error(self::INPUT_CODE);
                 if (Cache::get($mobile) == null || Cache::get($mobile) != $input['code']) return $this->_error(self::CODE_ERROR);
             }
+            unset($input['code']);
             #密码修改
             if (isset($input['password'])) {
                 if ($input['password'] == $input['old_password']) return $this->_error(self::NEW_PASS_EQ_OLD_PASS);
@@ -309,9 +370,8 @@ class UserController extends BaseController
                 ];
                 unset($input['old_password']);
                 if (!$auth->attempt($check)) return $this->_error(self::OLD_PASSWORD_FAILED);
+                $input['password']=Hash::make($input['password']);
             }
-            #真实姓名
-//            if (isset($input['name'])) if (!empty($auth->user()->name)) return $this->_error(self::USERNAME_CHANGE_ERR);
             $result = $this->user->where('id', $id)->update($input);
             if (!$result) return $this->_error(self::UPDATE_FAIL);
             #更新token
@@ -369,6 +429,30 @@ class UserController extends BaseController
     }
 
     /**
+     * @desc 修改密码验证旧手机
+     * @param mobile 旧手机号
+     * @param code 验证码
+     * @route api/check_old_mobile
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkMobile(Request $request){
+         try{
+             $code=$request->request->get('code');
+             $old_mobile=$request->request->get('mobile');
+
+             if(empty($code) || empty($mobile)) return $this->_error(self::PARAM_FAIL);
+             $id=$this->authInit()->id();
+             $mobile= $old_mobile.$id;
+             if (Cache::get($mobile) == null || Cache::get($mobile) != $code['code']) return $this->_error(self::CODE_ERROR);
+             Cache::add($id,1,240);
+             return $this->_success([],self::CHECK_SUCCESS);
+         } catch (\Exception $ex) {
+             return $this->_error($ex->getMessage());
+         }
+    }
+
+    /**
      * 获取短信code码
      * @method GET
      * @route mobile_code
@@ -396,7 +480,13 @@ class UserController extends BaseController
             $code = Cache::get($mobile);
             if (!$code) {
                 $code = rand(1000, 9999);
-                Cache::add($mobile, $code, 60); //60
+                $id=$this->authInit()->id();
+                if($id){
+                    Cache::add($mobile.$id, $code, 240); //60
+                }else{
+                    Cache::add($mobile, $code, 60); //60
+                }
+
             }
             $content = "【柒柒科技】您的验证码：{$code} 有效期60秒请尽快使用。";
             return $this->_success([], $content);
@@ -490,7 +580,7 @@ class UserController extends BaseController
 //            $input['avatar'] = $image->imageUrl(300, 300);
             $input['signature']   = '这个人很懒什么都没留下!';
             $input['avatar']   = 'default0.png';
-            $input['login_time'] = Carbon::now();
+            $input['login_time'] = Carbon::now()->toDateTimeString();
 //            $minGrade = $this->grade->getMinGrade();
 //            if ($minGrade === false) return $this->_error(self::ADD_DATA_FAILED);
 //            $input['alipay_type'] = $minGrade;
@@ -508,7 +598,8 @@ class UserController extends BaseController
             unset($obj, $input);
             if (!$reg) return $this->_error(self::REGISTER_ERROR);
             DB::commit();
-            $user = $this->user->find($reg->id);
+            $user = $this->user->where('id',$reg->id)->first( 'nickname','mobile','sex','password','avatar',
+                'signature','login_time','coin');
             $auth = $this->authInit();
             $auth->login($user);
             return $this->_success(['token' => $this->TokenHeader . $auth->getToken(), 'user' => $auth->user(), 'token_type' => 'Authorization'], self::REGISTER_SUCCESS);

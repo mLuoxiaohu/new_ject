@@ -23,6 +23,7 @@ class BaseController extends Controller{
    const TYPE_ERROR         ='类型错误';
    const PARAM_LOSE         ='参数丢失';
    const CHECK_FAIL         ='验证失败';
+   const CHECK_SUCCESS         ='验证失败';
    const TOKEN_ERROR        ='token错误';
    const TITLE_ERROR        ='标题重复';
    const LOGIN_ERROR        ='账号或密码错误';
@@ -31,11 +32,12 @@ class BaseController extends Controller{
    const REGISTER_SUCCESS   ='注册成功';
    const INVITE_CODE_ERROR  ='邀请码错误';
    const CODE_ERROR         ='验证码错误';
-   const MOBILE_EXISTS      ='该手机未注册,请注册后使用';
+   const MOBILE_EXISTS      ='该手机已注册';
    const PROHIBIT_LOGIN     ='账号已禁用,请联系客服处理';
    const NOT_CHANGE_CONTENT ='没有需要修改内容';
    const INPUT_CODE         ='请输入验证码';
    const STOP_ARTICLE       ='您已被禁止发帖，或发帖内容违规，请联系版主处理';
+   const OLD_MOBILE_EXPIRED ='旧手机验证过期,请重新验证';
    const UPDATE_FAIL        ='更新失败';
    const UPDATE_SUCCESS     ='更新成功';
    const USERNAME_CHANGE_ERR='更新失败,真实姓名只能修改一次';
@@ -182,7 +184,8 @@ class BaseController extends Controller{
             'alipay_type',
             'nickname',
             'content',
-            'title'
+            'title',
+            'online'
         ]);
         return array_map(function ($value) {
             if (is_null($value)) {
@@ -368,10 +371,12 @@ class BaseController extends Controller{
             $end = $file->getClientOriginalExtension();
             if ($end && !in_array($end, $allowed_extensions)) return array('code'=>400,'msg'=>self::UPLOAD_TYPE_ERROR);
             $time = time();
-            $path = public_path('uploads')."/{$file_path}";
+//            $path = public_path('user')."/{$file_path}";
+            $path=$file_path;
             $fileName = "{$path}/{$time}_{$this->str_rand(10)}.{$end}";
             $re = $file->move($path, $fileName);
-            $fileName = "/{$file_path}/{$re->getFilename()}";
+//            $fileName = "/{$file_path}/{$re->getFilename()}";
+            $fileName=$re->getFilename();
             return  array('code'=>200,'msg'=>self::UPLOAD_FILE_SUCCESS,'name'=>$fileName);
         } catch (\Exception $ex) {
             throw new \Exception($ex->getMessage());

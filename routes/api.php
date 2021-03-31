@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,20 +33,16 @@ Route::get('image_code', "UserController@ImageCode");
 Route::post('forget', "UserController@forgetPwd");
 #上传图片
 Route::post('upload', "UserController@UploadFile");
-#帖子列表
-Route::get('article_index', "ArticleController@list");
-#帖子详情
-Route::get('article_detail/{id}', "ArticleController@articleDetail");
 #获取头像
 Route::get('get_avatar', "UserController@randAvatar");
-/************************blog**************************/
-#他的信息
-Route::get('bolg_detail/{id}', "UserController@bolgDetail");
-#他的评论
-Route::get('blog_comment/{id}', "ArticleController@blog_comment");
-#他的帖子
-Route::get('blog_article/{id}', "ArticleController@blog_article");
-
+#用户留言
+Route::post('leave_message', "UserController@leave_message");
+#留言列表
+Route::get('leave_message_list', "UserController@leave_message_list");
+#关于我们
+Route::get('about', "IndexController@about");
+#关于我们添加（后台功能）
+Route::post('about_add', "IndexController@about_add");
 Route::group([
     'middleware' => 'auth:api'
 ], function () {
@@ -58,27 +53,7 @@ Route::group([
     Route::get('detail', "UserController@person");
     #退出登陆
     Route::get('logout', "UserController@logOut");
-    /************************文章类**************************/
-    #用户帖子
-    Route::get('article_list', "ArticleController@index");
-    #用户发帖
-    Route::post('article_add', "ArticleController@add");
-    #删除帖子
-    Route::delete('article_del/{id}', "ArticleController@deleteArticle");
-    #修改帖子
-    Route::put('article_change/{id}', "ArticleController@change");
-    #帖子点赞
-    Route::get('article_like/{id}', "ArticleController@likes");
-    #收藏帖子
-    Route::get('article_coll/{id}', "ArticleController@collection");
-    #发起评论
-    Route::post('comment_add/{id}', "ArticleController@commentAdd");
-    #收藏帖子列表
-    Route::get('article_store', "ArticleController@selfArticle");
-    #我的评论
-    Route::get('self_comment', "ArticleController@self_comment");
-    #修改帖子
-    Route::put('article_rewrite/{id}', "ArticleController@ContinueRewrite");
-
+    #验证旧手机
+    Route::get('check_old_mobile', "UserController@checkMobile");
 
 });
