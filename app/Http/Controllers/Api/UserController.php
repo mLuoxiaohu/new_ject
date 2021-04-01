@@ -463,7 +463,7 @@ class UserController extends BaseController
     {
         try {
             $param = [
-                "mobile" => "required|regex:/^1[345789][0-9]{9}$/"];
+                "mobile" => "required|regex:/^1[3456789][0-9]{9}$/"];
             $message = [
                 "mobile.required" => "手机号不能为空",
                 'mobile.regex' => '手机号格式不正确'
