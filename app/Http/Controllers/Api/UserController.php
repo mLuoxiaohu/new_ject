@@ -560,6 +560,7 @@ class UserController extends BaseController
             $message = [
                 "mobile.unique" => '此手机号已注册',
                 "mobile.required" => "手机号不能为空",
+                "mobile.regex" => "手机号格式不正确",
                 "password.required" => "密码不能为空",
                 'password.regex'=>'密码只能为只能为数字母6~14位',
                 'code.required' => '请输入验证码',
