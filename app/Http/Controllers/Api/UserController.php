@@ -321,7 +321,7 @@ class UserController extends BaseController
     {
         try {
             $param = [
-                "mobile" => "regex:/^1[345789][0-9]{9}$/",
+                "mobile" => "regex:/^1[3456789][0-9]{9}$/",
                 'password' => 'min:6|max:14',
                 'signature'=>'min:6|max:40',
                 'confirm_password'=>'same:password',
@@ -553,7 +553,7 @@ class UserController extends BaseController
         DB::beginTransaction();
         try {
             $param = [
-                "mobile" => ['required','unique:users','regex:/^[a-z\d_]{6,14}$/i'],
+                "mobile" => ['required','unique:users','regex:/^1[3456789][0-9]{9}$/'],
                 "password" => ['required','regex:/^[a-z\d_]{6,14}$/i'],
                 "code" => "required",
             ];
