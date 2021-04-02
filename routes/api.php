@@ -43,6 +43,18 @@ Route::get('leave_message_list', "UserController@leave_message_list");
 Route::get('about', "IndexController@about");
 #关于我们添加（后台功能）
 Route::post('about_add', "IndexController@about_add");
+
+/*******************游戏列表********************/
+#首页游戏列表
+Route::get('game_list', "IndexController@game_list");
+#首页轮播
+Route::get('carousel_list', "IndexController@Carousel");
+#首页新闻列表
+Route::get('news_list', "IndexController@newsList");
+#更多新闻
+Route::get('news_more', "IndexController@newsMore");
+#新闻类型
+Route::get('news_type', "IndexController@newsMore");
 Route::group([
     'middleware' => 'auth:api'
 ], function () {
