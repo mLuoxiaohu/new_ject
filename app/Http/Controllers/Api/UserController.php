@@ -50,6 +50,7 @@ class UserController extends BaseController
     /**
      * @desc 用户留言
      * @route api/leave_message
+     * @method post
      * @param title 标题
      * @param content 内容
      * @return \Illuminate\Http\JsonResponse
