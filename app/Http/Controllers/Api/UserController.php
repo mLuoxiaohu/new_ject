@@ -133,9 +133,7 @@ class UserController extends BaseController
     public function person()
     {
         try {
-            $userRe = $this->user->withCount(['article','articleStore'=>function($sql){
-                $sql->where('is_delete',1);
-            }])->find($this->authInit()->id());
+            $userRe = $this->user->find($this->authInit()->id());
             return $this->_success($userRe);
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
