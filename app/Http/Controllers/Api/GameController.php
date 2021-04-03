@@ -51,7 +51,6 @@ class GameController extends BaseController
     public function game_type()
     {
         try {
-
             $result = $this->kind->game_type;
             return $this->_success($result);
         } catch (\Exception $ex) {
@@ -60,11 +59,18 @@ class GameController extends BaseController
 
     }
 
-
+    /**
+     * @desc 开奖列表
+     * @param cate_id 开奖类型id
+     * @route /game_open_list
+     * @method GET
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function game_open_list()
     {
         try {
-            $cate_id = $this->input->get('cate_id');
+            $cate_id = $this->input->get('cate_id','');
+            if(empty($cate_id)) return $this->_error(self::PARAM_FAIL);
             //查询该分类的游戏
             $rows = $this->kind->where(array('cid' => $cate_id, 'none' => 0))
                 ->orderBy('sort', 'asc')
