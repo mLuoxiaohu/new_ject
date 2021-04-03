@@ -68,7 +68,7 @@ class GameController extends BaseController
      */
     public function game_open_list()
     {
-        try {
+//        try {
             $cate_id = $this->input->get('cate_id','');
             if(empty($cate_id)) return $this->_error(self::PARAM_FAIL);
             //查询该分类的游戏
@@ -76,6 +76,8 @@ class GameController extends BaseController
                 ->orderBy('sort', 'asc')
                 ->get(['id', 'name', 'icon', 'date', 'abbr', 'video']);
             foreach ($rows as $key => &$value) {
+
+                var_dump($value);die;
                 $arr = $this->open->where('kid', $value['id'])
                     ->orderBy('id', 'desc')
                     ->first(['kid', 'periods', 'number', 'time', 'next_time', 'adds']);
@@ -109,9 +111,9 @@ class GameController extends BaseController
                 }
             }
             return $this->_success($rows);
-        } catch (\Exception $ex) {
-            return $this->_error($ex->getMessage());
-        }
+//        } catch (\Exception $ex) {
+//            return $this->_error($ex->getMessage());
+//        }
     }
 
     private function getLhcOpenInfo($number)
@@ -153,7 +155,6 @@ class GameController extends BaseController
         $tmoth = date('m', time());
         $today = date('d', time());
         $maxArr = array();
-        $prevkj = array();
         foreach ($day as $k => $v) {
             if ($v['month'] == $tmoth) {
                 foreach ($v['list'] as $i => $j) {
@@ -232,7 +233,7 @@ class GameController extends BaseController
      * @param false $xjp 是否为新加坡 bool
      * @return false|int
      */
-    private function timeCal($arr,$type, $xjp=false){
+    private function timeCal($arr,array $type, $xjp=false){
         if ($xjp) {
             // 单独计算新加坡彩
             $nextTime = $arr['next_time'];
