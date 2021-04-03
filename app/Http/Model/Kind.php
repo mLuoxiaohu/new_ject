@@ -12,6 +12,7 @@ class Kind extends Model
     protected $table='kind';
 
 
+    public $game_type=[3=>'高频彩',4=>'低频彩'];
     /**
      * 拼接图片地址
      * @return mixed|string

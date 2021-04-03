@@ -45,6 +45,10 @@ Route::get('about', "IndexController@about");
 Route::post('about_add', "IndexController@about_add");
 
 /*******************游戏列表********************/
+#游戏类型
+Route::get('game_type', "GameController@game_type");
+
+/*****************首页数据***********************/
 #首页游戏列表
 Route::get('game_list', "IndexController@game_list");
 #首页轮播
@@ -55,6 +59,10 @@ Route::get('news_list', "IndexController@newsList");
 Route::get('news_more', "IndexController@newsMore");
 #新闻类型
 Route::get('news_type', "IndexController@newsMore");
+#开奖类型
+Route::get('game_type', "GameController@game_type");
+#开奖列表
+Route::get('game_open_list', "GameController@game_open_list");
 Route::group([
     'middleware' => 'auth:api'
 ], function () {
