@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 
 
 use App\Http\Controllers\BaseController;
+use App\Http\Model\Cate;
 use App\Http\Model\Kind;
 use App\Http\Model\Plan;
 use App\Http\Model\Record;
@@ -45,6 +46,54 @@ class GameController extends BaseController
 
 
     /**
+     * @desc 获取单个开奖记录
+     * @param id 彩种id
+     * @method get
+     * @route /game_open_ones
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function againTime()
+    {
+
+        try {
+            $id = $this->input->get('id');
+            if(empty($id)) return $this->_error(self::PARAM_FAIL);
+            $row = $this->kind->where('id', $id)
+                ->orderBy('id', 'desc')
+                ->first(['name', 'icon', 'date', 'abbr', 'video']);
+            $arr = $this->open->where('kid', $id)
+                ->orderBy('periods', 'desc')
+                ->orderBy('time', 'desc')
+                ->first(['periods', 'number', 'time', 'next_time']);
+            $row['periods'] = $arr['periods'];
+            $row['number'] = $arr['number'];
+            if(empty($row) || empty($arr)) return $this->_error(self::DATA_NULL);
+//            var_dump($row);die;
+            if (true) {
+                $type = explode("/", $row['date']);
+                $row['down'] = $this->timeCal($arr, $type);
+                if ($row['abbr'] == 'xjp' || $row['abbr'] == 'amlhc' || $row['abbr'] == 'hk6' || $row['abbr'] == 'bjkl8' || $row['abbr'] == 'twlh') {
+                    $row['down'] = $this->timeCal($arr, '', true);
+                }
+            } else {
+//            print_r($row['abbr']);exit;
+                $prev = date('d', $arr['time']);  // record 4
+                $sxNumber = $this->getLhcTime($arr['number']); // record
+                $row['sxlist'] = $sxNumber['sxNumber'];
+                if ($sxNumber['kj'] == $prev) {
+                    $row['down'] = $sxNumber['down'];
+                } else {
+                    $row['down'] = 0;
+                }
+            }
+            return $this->_success($row);
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+    }
+
+
+    /**
      * @desc 游戏类型
      * @route /game_type
      * @method GET
@@ -62,21 +111,39 @@ class GameController extends BaseController
     }
 
     /**
-     * @desc 获取所有彩种
-     * @method Get
-     * @route /game_all
+     * @desc 彩票计划列表
+     * @method get
+     * @route /game_cate_list
      * @return \Illuminate\Http\JsonResponse
      */
-    public function game_all(){
+    public function cateGamesList(Cate $cate)
+    {
         try {
-            $result = $this->kind->where('none',0)
-                ->orderBy('sort','asc')
-                ->get(['id','name','icon','abbr']);
+            $result = $cate->with('kind')->get();
             return $this->_success($result);
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
         }
     }
+
+    /**
+     * @desc 获取所有彩种
+     * @method Get
+     * @route /game_all
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function game_all()
+    {
+        try {
+            $result = $this->kind->where('none', 0)
+                ->orderBy('sort', 'asc')
+                ->get(['id', 'name', 'icon', 'abbr']);
+            return $this->_success($result);
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+    }
+
     /**
      * @desc 开奖列表
      * @param cate_id 开奖类型id
@@ -87,8 +154,8 @@ class GameController extends BaseController
     public function game_open_list()
     {
         try {
-            $cate_id = $this->input->get('cate_id','');
-            if(empty($cate_id)) return $this->_error(self::PARAM_FAIL);
+            $cate_id = $this->input->get('cate_id', '');
+            if (empty($cate_id)) return $this->_error(self::PARAM_FAIL);
             //查询该分类的游戏
             $rows = $this->kind->where(['cid' => $cate_id, 'none' => 0])
                 ->orderBy('sort', 'asc')
@@ -149,24 +216,25 @@ class GameController extends BaseController
      * @param id 彩种id 必填
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getPerRecord(){
-        try{
-        $limit =$this->input->get('num',20);
-        $id =  $this->input->get('id');
-        if(empty($id)) return $this->_error(self::PARAM_FAIL);
-        $db_record = DB::table('record');
-        if ($id == 28 || $id == 23 || $id == 41 || $id == 1) {
-            $info = $db_record->select(DB::raw('distinct(periods),number,time'))
-                ->where('kid',$id)->orderBy('time','desc')
-                ->limit($limit)->get();
-        } else {
-            $info = $db_record->select(DB::raw('distinct(periods),number,time'))
-                ->where('kid',$id)->orderBy(DB::raw('periods * 1'),'desc')
-                ->limit($limit)->get();
-        }
-        $row = $this->kind->where('id',$id)->first(['abbr','name','code']);
-        if($info) return $this->_success(['info'=>$info,'abbr'=>$row['abbr'],'name'=>$row['name'],'code'=>$row['code']]);
-         return $this->_error();
+    public function getPerRecord()
+    {
+        try {
+            $limit = $this->input->get('num', 20);
+            $id = $this->input->get('id');
+            if (empty($id)) return $this->_error(self::PARAM_FAIL);
+            $db_record = DB::table('record');
+            if ($id == 28 || $id == 23 || $id == 41 || $id == 1) {
+                $info = $db_record->select(DB::raw('distinct(periods),number,time'))
+                    ->where('kid', $id)->orderBy('time', 'desc')
+                    ->limit($limit)->get();
+            } else {
+                $info = $db_record->select(DB::raw('distinct(periods),number,time'))
+                    ->where('kid', $id)->orderBy(DB::raw('periods * 1'), 'desc')
+                    ->limit($limit)->get();
+            }
+            $row = $this->kind->where('id', $id)->first(['abbr', 'name', 'code']);
+            if ($info) return $this->_success(['info' => $info, 'abbr' => $row['abbr'], 'name' => $row['name'], 'code' => $row['code']]);
+            return $this->_error();
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
         }
@@ -180,15 +248,16 @@ class GameController extends BaseController
      * @param id 彩种id 必填
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getLhcRecord(){
+    public function getLhcRecord()
+    {
         try {
-        $limit =$this->input->get('num',20);
-        $id =  $this->input->get('id');
-        if(empty($id)) return $this->_error(self::PARAM_FAIL);
-        $info = $this->open->where('kid',$id)
-            ->orderBy('id','desc')
-            ->limit($limit)->get(['periods','number','adds','time']);
-        return $this->_success($info);
+            $limit = $this->input->get('num', 20);
+            $id = $this->input->get('id');
+            if (empty($id)) return $this->_error(self::PARAM_FAIL);
+            $info = $this->open->where('kid', $id)
+                ->orderBy('id', 'desc')
+                ->limit($limit)->get(['periods', 'number', 'adds', 'time']);
+            return $this->_success($info);
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
         }
@@ -198,17 +267,18 @@ class GameController extends BaseController
      * @desc 获取本期计划
      * @param id 彩种id
      * @method get
-     * @route /plan
+     * @route /game_plan
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getbqPlan(Plan $plan){
-        try{
-        $id =  $this->input->get('id');
-        $info = $plan->where('kid',$id)->orderBy('id','desc')->first();
-        $info['value'] = unserialize($info['value']);
-        $row = $this->kind->where('id',$id)->first(['abbr','name','code']);
-        if($info) return $this->_success(array('info'=>$info,'abbr'=>$row['abbr'],'name'=>$row['name'],'code'=>$row['code']));
-        return $this->_error();
+    public function getbqPlan(Plan $plan)
+    {
+        try {
+            $id = $this->input->get('id');
+            $info = $plan->where('kid', $id)->orderBy('id', 'desc')->first();
+            $info['value'] = unserialize($info['value']);
+            $row = $this->kind->where('id', $id)->first(['abbr', 'name', 'code']);
+            if ($info) return $this->_success(array('info' => $info, 'abbr' => $row['abbr'], 'name' => $row['name'], 'code' => $row['code']));
+            return $this->_error();
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
         }
@@ -216,14 +286,15 @@ class GameController extends BaseController
 
 
     //六合彩专版查询
-    public function lhcSpecial(){
+    public function lhcSpecial()
+    {
         $wx = unserialize(env('WUXIN'));
         $sx = unserialize(env('SHENXIAO'));
         $day = unserialize(env('DAY'));
-        if($wx && $sx && $day){
-            return $this->_success(array('wx'=>$wx,'sx'=>$sx,'day'=>$day));
-        }else{
-           return $this->_error();
+        if ($wx && $sx && $day) {
+            return $this->_success(array('wx' => $wx, 'sx' => $sx, 'day' => $day));
+        } else {
+            return $this->_error();
         }
     }
 
@@ -334,94 +405,95 @@ class GameController extends BaseController
      * @param false $xjp 是否为新加坡 bool
      * @return false|int
      */
-    private function timeCal($arr,array $type, $xjp=false){
+    private function timeCal($arr,$type, $xjp = false)
+    {
         if ($xjp) {
             // 单独计算新加坡彩
             $nextTime = $arr['next_time'];
-            return $nextTime-time() > 0 ? $nextTime-time(): 0;
+            return $nextTime - time() > 0 ? $nextTime - time() : 0;
         }
         $count = count($type);
         $new = time();
         switch ($count) {
             case 4:
                 //第一阶段时间范围
-                $jd1 = explode('-',$type[0]);
+                $jd1 = explode('-', $type[0]);
                 //第二阶段时间范围
-                $jd2 = explode('-',$type[2]);
+                $jd2 = explode('-', $type[2]);
                 //第一阶段时间戳
-                $jd1_start = strtotime(date('Y-m-d H:i:s',strtotime($jd1[0])));
-                $jd1_end = strtotime(date('Y-m-d H:i:s',strtotime($jd1[1])));
+                $jd1_start = strtotime(date('Y-m-d H:i:s', strtotime($jd1[0])));
+                $jd1_end = strtotime(date('Y-m-d H:i:s', strtotime($jd1[1])));
                 //第二阶段时间戳
-                $jd2_start = strtotime(date('Y-m-d H:i:s',strtotime($jd2[0])));
-                $jd2_end = strtotime(date('Y-m-d H:i:s',strtotime($jd2[1])));
+                $jd2_start = strtotime(date('Y-m-d H:i:s', strtotime($jd2[0])));
+                $jd2_end = strtotime(date('Y-m-d H:i:s', strtotime($jd2[1])));
                 //现在时间戳
-                if($new>=$jd1_start && $new<=$jd1_end){
-                    if(($arr['time']+$type[2])>time()){
-                        $down = ($arr['time']+$type[2])-time()-15;
-                    }else{
+                if ($new >= $jd1_start && $new <= $jd1_end) {
+                    if (($arr['time'] + $type[2]) > time()) {
+                        $down = ($arr['time'] + $type[2]) - time() - 15;
+                    } else {
                         $down = 0;
                     }
-                }else if($new>$jd2_start){
-                    if(($arr['time']+$type[3])>time()){
-                        $down = ($arr['time']+$type[3])-time()-15;
-                    }else{
-                        $down = 0;
-                    }
-
-                }else if( $new<$jd2_end){
-                    if(($arr['time']+$type[3])>time()){
-                        $down = ($arr['time']+$type[3])-time()-15;
-                    }else{
+                } else if ($new > $jd2_start) {
+                    if (($arr['time'] + $type[3]) > time()) {
+                        $down = ($arr['time'] + $type[3]) - time() - 15;
+                    } else {
                         $down = 0;
                     }
 
-                }else{
+                } else if ($new < $jd2_end) {
+                    if (($arr['time'] + $type[3]) > time()) {
+                        $down = ($arr['time'] + $type[3]) - time() - 15;
+                    } else {
+                        $down = 0;
+                    }
+
+                } else {
                     //明天开始时间 - 今晚结束时间
                     $down = $jd1_start - $new;
 
                 }
                 break;
             case 2:
-                $jd1 = explode('-',$type[0]);
+                $jd1 = explode('-', $type[0]);
                 //第一阶段时间戳
-                $jd1_start = strtotime(date('Y-m-d H:i:s',strtotime($jd1[0])));
-                $jd1_end = strtotime(date('Y-m-d H:i:s',strtotime($jd1[1])));
-                if($jd1_end-$jd1_start>0){
-                    if($new>=$jd1_start && $new<=$jd1_end){
-                        if(($arr['time']+$type[1])>time()){
-                            $down = ($arr['time']+$type[1])-time()-15;
-                        }else{
+                $jd1_start = strtotime(date('Y-m-d H:i:s', strtotime($jd1[0])));
+                $jd1_end = strtotime(date('Y-m-d H:i:s', strtotime($jd1[1])));
+                if ($jd1_end - $jd1_start > 0) {
+                    if ($new >= $jd1_start && $new <= $jd1_end) {
+                        if (($arr['time'] + $type[1]) > time()) {
+                            $down = ($arr['time'] + $type[1]) - time() - 15;
+                        } else {
                             $down = 0;
                         }
-                    }else{
+                    } else {
                         //用第二天的开始时间减去现在的时间 算出剩余开奖时间
-                        $next = strtotime('+1 day',strtotime(date('Y-m-d H:i:s',$jd1_start)));
+                        $next = strtotime('+1 day', strtotime(date('Y-m-d H:i:s', $jd1_start)));
                         $down = $next - $new;
                     }
-                }else{
-                    if($new>=$jd1_start){
-                        if(($arr['time']+$type[1])>time()){
-                            $down = ($arr['time']+$type[1])-time()-15;
-                        }else{
+                } else {
+                    if ($new >= $jd1_start) {
+                        if (($arr['time'] + $type[1]) > time()) {
+                            $down = ($arr['time'] + $type[1]) - time() - 15;
+                        } else {
                             $down = 0;
                         }
-                    }else if($new<=$jd1_end){
+                    } else if ($new <= $jd1_end) {
 
-                        if(($arr['time']+$type[1])>time()){
-                            $down = ($arr['time']+$type[1])-time()-15;
-                        }else{
+                        if (($arr['time'] + $type[1]) > time()) {
+                            $down = ($arr['time'] + $type[1]) - time() - 15;
+                        } else {
                             $down = 0;
                         }
-                    }else{
+                    } else {
                         $down = $jd1_start - $new;
                     }
                 }
 
                 break;
             case 1:
-                if(($arr['time']+$type[0])>time()){
-                    $down = ($arr['time']+$type[0])-time()-15;
-                }else{
+                if (($arr['time'] + $type[0]) > time()) {
+                    $down = ($arr['time'] + $type[0]) - time() - 15;
+                } else {
                     $down = 0;
                 }
                 break;

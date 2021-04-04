@@ -69,7 +69,12 @@ Route::get('game_lh_record', "GameController@getLhcRecord");
 Route::get('game_record', "GameController@getPerRecord");
 #开奖计划
 Route::get('game_plan', "GameController@getbqPlan");
-#开奖计划
+#彩票计划列表
+Route::get('game_cate_list', "GameController@cateGamesList");
+#获取单个开奖记录
+Route::get('game_open_ones', "GameController@againTime");
+
+#彩票列表
 Route::get('game_all', "GameController@game_all");
 Route::group([
     'middleware' => 'auth:api'
