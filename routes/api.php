@@ -63,6 +63,14 @@ Route::get('news_type', "IndexController@newsMore");
 Route::get('game_type', "GameController@game_type");
 #开奖列表
 Route::get('game_open_list', "GameController@game_open_list");
+#开奖记录（六合）
+Route::get('game_lh_record', "GameController@getLhcRecord");
+#开奖记录
+Route::get('game_record', "GameController@getPerRecord");
+#开奖计划
+Route::get('game_plan', "GameController@getbqPlan");
+#开奖计划
+Route::get('game_all', "GameController@game_all");
 Route::group([
     'middleware' => 'auth:api'
 ], function () {

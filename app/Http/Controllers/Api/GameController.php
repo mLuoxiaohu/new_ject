@@ -6,10 +6,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Model\Kind;
+use App\Http\Model\Plan;
 use App\Http\Model\Record;
 use App\Http\Model\User;
 use Illuminate\Contracts\Auth\Factory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Contracts\Providers\JWT;
 
 class GameController extends BaseController
@@ -60,6 +62,22 @@ class GameController extends BaseController
     }
 
     /**
+     * @desc 获取所有彩种
+     * @method Get
+     * @route /game_all
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function game_all(){
+        try {
+            $result = $this->kind->where('none',0)
+                ->orderBy('sort','asc')
+                ->get(['id','name','icon','abbr']);
+            return $this->_success($result);
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+    }
+    /**
      * @desc 开奖列表
      * @param cate_id 开奖类型id
      * @route /game_open_list
@@ -68,16 +86,14 @@ class GameController extends BaseController
      */
     public function game_open_list()
     {
-//        try {
+        try {
             $cate_id = $this->input->get('cate_id','');
             if(empty($cate_id)) return $this->_error(self::PARAM_FAIL);
             //查询该分类的游戏
-            $rows = $this->kind->where(array('cid' => $cate_id, 'none' => 0))
+            $rows = $this->kind->where(['cid' => $cate_id, 'none' => 0])
                 ->orderBy('sort', 'asc')
                 ->get(['id', 'name', 'icon', 'date', 'abbr', 'video']);
             foreach ($rows as $key => &$value) {
-
-                var_dump($value);die;
                 $arr = $this->open->where('kid', $value['id'])
                     ->orderBy('id', 'desc')
                     ->first(['kid', 'periods', 'number', 'time', 'next_time', 'adds']);
@@ -111,9 +127,9 @@ class GameController extends BaseController
                 }
             }
             return $this->_success($rows);
-//        } catch (\Exception $ex) {
-//            return $this->_error($ex->getMessage());
-//        }
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
     }
 
     private function getLhcOpenInfo($number)
@@ -125,6 +141,91 @@ class GameController extends BaseController
         return $res;
     }
 
+
+    /**
+     * @desc 获取彩种开奖记录
+     * @route /game_record
+     * @param num 每页多少条 default 20
+     * @param id 彩种id 必填
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getPerRecord(){
+        try{
+        $limit =$this->input->get('num',20);
+        $id =  $this->input->get('id');
+        if(empty($id)) return $this->_error(self::PARAM_FAIL);
+        $db_record = DB::table('record');
+        if ($id == 28 || $id == 23 || $id == 41 || $id == 1) {
+            $info = $db_record->select(DB::raw('distinct(periods),number,time'))
+                ->where('kid',$id)->orderBy('time','desc')
+                ->limit($limit)->get();
+        } else {
+            $info = $db_record->select(DB::raw('distinct(periods),number,time'))
+                ->where('kid',$id)->orderBy(DB::raw('periods * 1'),'desc')
+                ->limit($limit)->get();
+        }
+        $row = $this->kind->where('id',$id)->first(['abbr','name','code']);
+        if($info) return $this->_success(['info'=>$info,'abbr'=>$row['abbr'],'name'=>$row['name'],'code'=>$row['code']]);
+         return $this->_error();
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+    }
+
+
+    /**
+     * @desc 获取彩种开奖记录（六合）
+     * @route /game_lh_record
+     * @param num 每页多少条 default 20
+     * @param id 彩种id 必填
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getLhcRecord(){
+        try {
+        $limit =$this->input->get('num',20);
+        $id =  $this->input->get('id');
+        if(empty($id)) return $this->_error(self::PARAM_FAIL);
+        $info = $this->open->where('kid',$id)
+            ->orderBy('id','desc')
+            ->limit($limit)->get(['periods','number','adds','time']);
+        return $this->_success($info);
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+    }
+
+    /**
+     * @desc 获取本期计划
+     * @param id 彩种id
+     * @method get
+     * @route /plan
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getbqPlan(Plan $plan){
+        try{
+        $id =  $this->input->get('id');
+        $info = $plan->where('kid',$id)->orderBy('id','desc')->first();
+        $info['value'] = unserialize($info['value']);
+        $row = $this->kind->where('id',$id)->first(['abbr','name','code']);
+        if($info) return $this->_success(array('info'=>$info,'abbr'=>$row['abbr'],'name'=>$row['name'],'code'=>$row['code']));
+        return $this->_error();
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+    }
+
+
+    //六合彩专版查询
+    public function lhcSpecial(){
+        $wx = unserialize(env('WUXIN'));
+        $sx = unserialize(env('SHENXIAO'));
+        $day = unserialize(env('DAY'));
+        if($wx && $sx && $day){
+            return $this->_success(array('wx'=>$wx,'sx'=>$sx,'day'=>$day));
+        }else{
+           return $this->_error();
+        }
+    }
 
     /**
      * @desc 六合彩开奖及生肖
@@ -246,7 +347,7 @@ class GameController extends BaseController
                 //第一阶段时间范围
                 $jd1 = explode('-',$type[0]);
                 //第二阶段时间范围
-                $jd2 = explode('-',$type[1]);
+                $jd2 = explode('-',$type[2]);
                 //第一阶段时间戳
                 $jd1_start = strtotime(date('Y-m-d H:i:s',strtotime($jd1[0])));
                 $jd1_end = strtotime(date('Y-m-d H:i:s',strtotime($jd1[1])));
