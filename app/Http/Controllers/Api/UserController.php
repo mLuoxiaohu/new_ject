@@ -379,6 +379,7 @@ class UserController extends BaseController
             #更新数据
             $user = $this->user->find($id);
             $auth->login($user);
+            if(isset($input['mobile'])) Cache::forget($id);
             return $this->_success(['token' => $newToken, 'user' => $auth->user(), 'token_type' => 'Authorization'], self::UPDATE_SUCCESS);
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
