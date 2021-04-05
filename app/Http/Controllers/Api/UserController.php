@@ -445,6 +445,7 @@ class UserController extends BaseController
              $mobile= $old_mobile.(string)$id;
              if (Cache::get($mobile) == null || Cache::get($mobile) != $code) return $this->_error(self::CODE_ERROR);
              Cache::add($id,1,240);
+             Cache::forget($mobile);
              return $this->_success([],self::CHECK_SUCCESS);
          } catch (\Exception $ex) {
              return $this->_error($ex->getMessage());
