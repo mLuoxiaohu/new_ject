@@ -54,7 +54,6 @@ class GameController extends BaseController
      */
     public function againTime()
     {
-
         try {
             $id = $this->input->get('id');
             if(empty($id)) return $this->_error(self::PARAM_FAIL);
@@ -262,6 +261,50 @@ class GameController extends BaseController
             return $this->_error($ex->getMessage());
         }
     }
+
+    /**
+     * @desc 获取计划开奖记录
+     * @route /game_plan_record
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getPlanRecord(){
+        try{
+        //获取参数
+        $limit = $this->input->get('num', 20);
+        $id = $this->input->get('id');
+        if(empty($id) || empty($limit)) return $this->_error(self::PARAM_FAIL);
+        if (in_array($id, [11])) {
+            $info = $this->open->where('kid', $id)
+                ->orderBy(DB::raw('periods * 1'), 'desc')
+                ->limit($limit)
+                ->get(['id','periods','number','value','time']);
+        } else {
+            $info = $this->open->where('kid', $id)
+                ->orderBy('id','desc')
+                ->limit($limit)
+                ->get(['id','periods','number','value','time']);
+        }
+        foreach ($info as $key => $value) $info[$key]['value'] = unserialize($value['value']);
+        $row = $this->kind->where('id',$id)->first(['abbr','name','code']);
+        //生肖计算
+        $sx = unserialize(env('SHENXIAO'));
+        if($row['abbr'] == 'hk6' || $row['abbr'] == 'xjp' || $row['abbr'] == 'amlhc'|| $row['abbr'] == 'twlh'){
+            foreach ($info as $key => $value) {
+                //字符串转数组
+                $numArr = explode(',',$value['number']);
+                $sxNumber = array();
+                foreach ($numArr as $k => $v) foreach ($sx as $i => $j)  if(in_array($v, $j)) $sxNumber[$k] = $i;
+                $info[$key]['sx'] = $sxNumber;
+            }
+        }
+            return $this->_success(array('info'=>$info,'abbr'=>$row['abbr'],'name'=>$row['name'],'code'=>$row['code']));
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+
+    }
+
 
     /**
      * @desc 获取本期计划

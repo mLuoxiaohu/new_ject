@@ -439,8 +439,8 @@ class UserController extends BaseController
          try{
              $code=$request->request->get('code');
              $old_mobile=$request->request->get('mobile');
-
-             if(empty($code) || empty($mobile)) return $this->_error(self::PARAM_FAIL);
+//               var_dump($code,$old_mobile);
+//             if(empty($code) || empty($mobile)) return $this->_error(self::PARAM_FAIL);
              $id=$this->authInit()->id();
              $mobile= $old_mobile.$id;
              if (Cache::get($mobile) == null || Cache::get($mobile) != $code['code']) return $this->_error(self::CODE_ERROR);

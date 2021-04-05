@@ -73,9 +73,9 @@ Route::get('game_plan', "GameController@getbqPlan");
 Route::get('game_cate_list', "GameController@cateGamesList");
 #获取单个开奖记录
 Route::get('game_open_ones', "GameController@againTime");
-
 #彩票列表
 Route::get('game_all', "GameController@game_all");
+//Route::get('check_old_mobile', "UserController@checkMobile");
 Route::group([
     'middleware' => 'auth:api'
 ], function () {
