@@ -442,7 +442,7 @@ class UserController extends BaseController
              if(empty($code) || empty($old_mobile)) return $this->_error(self::PARAM_FAIL);
              $id=$this->authInit()->id();
              $mobile= $old_mobile.$id;
-             if (Cache::get($mobile) == null || Cache::get($mobile) != $code['code']) return $this->_error(self::CODE_ERROR);
+             if (Cache::get($mobile) == null || Cache::get($mobile) != $code) return $this->_error(self::CODE_ERROR);
              Cache::add($id,1,240);
              return $this->_success([],self::CHECK_SUCCESS);
          } catch (\Exception $ex) {
@@ -484,7 +484,6 @@ class UserController extends BaseController
                 }else{
                     Cache::add($mobile, $code, 60); //60
                 }
-
             }
             $content = "【柒柒科技】您的验证码：{$code} 有效期60秒请尽快使用。";
 

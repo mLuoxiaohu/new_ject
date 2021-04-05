@@ -75,7 +75,7 @@ Route::get('game_cate_list', "GameController@cateGamesList");
 Route::get('game_open_ones', "GameController@againTime");
 #彩票列表
 Route::get('game_all', "GameController@game_all");
-//Route::get('check_old_mobile', "UserController@checkMobile");
+Route::get('check_old_mobile', "UserController@checkMobile");
 Route::group([
     'middleware' => 'auth:api'
 ], function () {
@@ -87,6 +87,6 @@ Route::group([
     #退出登陆
     Route::get('logout', "UserController@logOut");
     #验证旧手机
-    Route::get('check_old_mobile', "UserController@checkMobile");
+//    Route::get('check_old_mobile', "UserController@checkMobile");
 
 });
