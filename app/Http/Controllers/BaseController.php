@@ -23,7 +23,7 @@ class BaseController extends Controller{
    const TYPE_ERROR         ='类型错误';
    const PARAM_LOSE         ='参数丢失';
    const CHECK_FAIL         ='验证失败';
-   const CHECK_SUCCESS         ='验证失败';
+   const CHECK_SUCCESS      ='验证成功';
    const TOKEN_ERROR        ='token错误';
    const TITLE_ERROR        ='标题重复';
    const LOGIN_ERROR        ='账号或密码错误';

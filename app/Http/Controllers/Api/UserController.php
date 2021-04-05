@@ -441,7 +441,7 @@ class UserController extends BaseController
              $old_mobile=$request->request->get('mobile');
              if(empty($code) || empty($old_mobile)) return $this->_error(self::PARAM_FAIL);
              $id=$this->authInit()->id();
-             $mobile= $old_mobile.$id;
+             $mobile= $old_mobile.(string)$id;
              if (Cache::get($mobile) == null || Cache::get($mobile) != $code) return $this->_error(self::CODE_ERROR);
              Cache::add($id,1,240);
              return $this->_success([],self::CHECK_SUCCESS);
@@ -475,18 +475,22 @@ class UserController extends BaseController
             #end:结束
             /*********分割**********/
             #start:上线以后注释以下代码
-            $code = Cache::get($mobile);
+            $id=$this->authInit()->id();
+            if($id){
+                $code = Cache::get($mobile.$id);
+            }else{
+                $code = Cache::get($mobile);
+            }
             if (!$code) {
                 $code = rand(1000, 9999);
-                $id=$this->authInit()->id();
                 if($id){
+                    var_dump($mobile.$id);
                     Cache::add($mobile.$id, $code, 240); //60
                 }else{
                     Cache::add($mobile, $code, 60); //60
                 }
             }
             $content = "【柒柒科技】您的验证码：{$code} 有效期60秒请尽快使用。";
-
             return $this->_success(['code'=>$code], $content);
             #end:结束
         } catch (\Exception $ex) {
@@ -597,8 +601,8 @@ class UserController extends BaseController
             unset($obj, $input);
             if (!$reg) return $this->_error(self::REGISTER_ERROR);
             DB::commit();
-            $user = $this->user->where('id',$reg->id)->first( 'nickname','mobile','sex','password','avatar',
-                'signature','login_time','coin');
+            $user = $this->user->where('id',$reg->id)->first(['nickname','mobile','sex','password','avatar',
+                'signature','login_time','coin']);
             $auth = $this->authInit();
             $auth->login($user);
             return $this->_success(['token' => $this->TokenHeader . $auth->getToken(), 'user' => $auth->user(), 'token_type' => 'Authorization'], self::REGISTER_SUCCESS);
