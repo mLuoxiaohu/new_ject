@@ -232,6 +232,9 @@ class GameController extends BaseController
                     ->limit($limit)->get();
             }
             $row = $this->kind->where('id', $id)->first(['abbr', 'name', 'code']);
+
+            if($info) foreach ($info as $key =>&$v) $v->number=explode(',', $v->number);
+
             if ($info) return $this->_success(['info' => $info, 'abbr' => $row['abbr'], 'name' => $row['name'], 'code' => $row['code']]);
             return $this->_error();
         } catch (\Exception $ex) {
@@ -255,7 +258,12 @@ class GameController extends BaseController
             if (empty($id)) return $this->_error(self::PARAM_FAIL);
             $info = $this->open->where('kid', $id)
                 ->orderBy('id', 'desc')
-                ->limit($limit)->get(['periods', 'number', 'adds', 'time']);
+                ->limit($limit)->get(['periods', 'number', 'adds', 'time'])->toArray();
+            if($info){
+                foreach ($info as $key =>&$v){
+                    $v['number']=explode(',',$v['number']);
+                }
+            }
             return $this->_success($info);
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
