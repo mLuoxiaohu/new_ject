@@ -319,12 +319,13 @@ class UserController extends BaseController
     public function userUpdate(Request $request)
     {
         try {
+
             $param = [
                 "mobile" => "regex:/^1[3456789][0-9]{9}$/",
                 'password' => 'min:6|max:14',
                 'signature'=>'min:6|max:40',
                 'confirm_password'=>'same:password',
-                'avatar' => 'mimes:jpeg,bmp,png,jpg,gif',
+                'avatar' => ['mimes:jpeg,bmp,png,gif,jpg'],
             ];
             $message = [
                 "password.min" => "密码不能小于6位",
@@ -345,8 +346,9 @@ class UserController extends BaseController
             }
             #删除旧图片
             if (isset($input['avatar'])) {
-                $old = $auth->user()->avatar;
-                if (!empty($old)) $this->deleteFile($old);
+                $old =explode('/',$auth->user()->avatar);
+                $old_Img=$old[count($old) - 1];
+                if (!empty($old_Img)) $this->deleteFile($old_Img);
             }
             if (count($input) <= 0) return $this->_error(self::NOT_CHANGE_CONTENT);
             #手机修改

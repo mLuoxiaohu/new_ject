@@ -81,7 +81,7 @@ Route::group([
 ], function () {
     /************************用户类**************************/
     #修改资料
-    Route::put('change', "UserController@userUpdate");
+    Route::post('change', "UserController@userUpdate");
     #获取个人信息
     Route::get('detail', "UserController@person");
     #退出登陆

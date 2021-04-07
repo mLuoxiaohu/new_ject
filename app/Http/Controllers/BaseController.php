@@ -465,7 +465,7 @@ class BaseController extends Controller{
     {
         try {
             if(empty($file)) return true;
-            $path = public_path('uploads') . '\\' . $file;
+            $path = public_path('user') . '\\' . $file;
             unlink($path);
             return true;
         } catch (\Exception $ex) {
