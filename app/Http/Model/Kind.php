@@ -11,6 +11,11 @@ class Kind extends Model
 {
     protected $table='kind';
 
+    /**
+     * 18香港,37新加坡，38澳门，40台湾
+     * @var int[]
+     */
+    public $other=[18,37,38,40];
 
     public $game_type=[3=>'高频彩',4=>'低频彩'];
     /**

@@ -12,7 +12,9 @@ use App\Http\Model\Record;
 use App\Http\Model\User;
 use Illuminate\Contracts\Auth\Factory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use phpDocumentor\Reflection\Types\Self_;
 use Tymon\JWTAuth\Contracts\Providers\JWT;
 
 class GameController extends BaseController
@@ -44,6 +46,43 @@ class GameController extends BaseController
         return $this->auth->guard($this->prefix);
     }
 
+    /**
+     * @desc 六合彩专版查询
+     * @method get
+     * @route /lh_special
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function lhcSpecial()
+    {
+        try {
+            $wx = unserialize(env('WUXIN'));
+            $sx = unserialize(env('SHENXIAO'));
+            $day = unserialize(env('DAY'));
+            if ($wx && $sx && $day) return $this->_success(array('wx' => $wx, 'sx' => $sx, 'day' => $day));
+            return $this->_error();
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+    }
+
+    /**
+     * @desc 获取有直播的彩种列表
+     * @method get
+     * @route /game_live_all
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function gatLiveAllGame()
+    {
+        try {
+            $info = $this->kind->where(array('video' => 1, 'none' => 0))->orderBy('sort', 'asc')->get(['id', 'name', 'icon', 'abbr']);
+            if ($info) return $this->_success($info);
+            return $this->_error();
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+
+    }
+
 
     /**
      * @desc 直播列表
@@ -55,7 +94,7 @@ class GameController extends BaseController
     {
         try {
             $rows = $this->kind->where(array('video' => 1, 'none' => 0))->orderBy('id', 'desc')->get(['id', 'icon', 'date', 'abbr']);
-            foreach ($rows as $key => $value) {
+            foreach ($rows as $key => &$value) {
                 $arr = $this->open->where(array('kid' => $value['id']))->orderBy('id', 'desc')->first(['periods', 'number', 'time']);
                 if ($value['abbr'] != 'hk6') {
                     $type = explode("/", $value['date']);
@@ -276,8 +315,47 @@ class GameController extends BaseController
     }
 
 
+
     /**
-     * @desc 获取彩种开奖记录（六合）
+     * @desc  获取澳门,新加坡,香港开奖
+     * @route /game_open_other
+     * @method get
+     * @param  num 每页多少条 default 20
+     * @param  id 彩种id 18香港,37新加坡，38澳门，40台湾
+     */
+    public function gameOpenOther(){
+        //获取参数
+        try{
+        $limit = $this->input->get('num', 20);
+        $id = $this->input->get('id');
+        if(empty($id) || empty($limit)) return $this->_error(self::PARAM_FAIL);
+
+        if(!in_array($id,$this->kind->other)) return $this->_error(self::PARAM_NOT_EXISTS);
+        $info = $this->open->where(array('kid'=>$id))
+            ->orderBy(DB::raw('periods * 1'), 'desc')
+            ->limit($limit)->get(['periods','number','adds','time','next_time'])->toArray();
+        foreach($info as $k => &$v) {
+            $ex=explode('|',$v['adds']);
+           $v=array(
+                'periods'=>$v['periods'],
+                'wx'=>explode(",",$ex[1]),
+                'sx'=>explode(",",$ex[0]),
+                'number'=> explode(',', $v['number']),
+                'next_time'=>date('Y-m-d H:i:s',$v['next_time']),
+                'time'=>date('Y-m-d H:i:s',$v['time']),
+            );
+        }
+            if ($info) return $this->_success($info);
+            return $this->_error();
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+    }
+
+
+
+    /**
+     * @desc 获取彩种开奖记录（新加坡，澳门专用）
      * @route /game_lh_record
      * @param num 每页多少条 default 20
      * @param id 彩种id 必填
@@ -370,18 +448,6 @@ class GameController extends BaseController
     }
 
 
-    //六合彩专版查询
-    public function lhcSpecial()
-    {
-        $wx = unserialize(env('WUXIN'));
-        $sx = unserialize(env('SHENXIAO'));
-        $day = unserialize(env('DAY'));
-        if ($wx && $sx && $day) {
-            return $this->_success(array('wx' => $wx, 'sx' => $sx, 'day' => $day));
-        } else {
-            return $this->_error();
-        }
-    }
 
     /**
      * @desc 六合彩开奖及生肖

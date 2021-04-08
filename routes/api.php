@@ -77,7 +77,12 @@ Route::get('game_open_ones', "GameController@againTime");
 Route::get('game_all', "GameController@game_all");
 #直播列表
 Route::get('game_live_list', "GameController@getLiveList");
-//Route::get('check_old_mobile', "UserController@checkMobile");
+#获取直播菜单列表
+Route::get('game_live_all', "GameController@gatLiveAllGame");
+#六合专版查询
+Route::get('game_lh_special', "GameController@lhcSpecial");
+#香港澳门新加坡开奖
+Route::get('game_open_other', "GameController@gameOpenOther");
 Route::group([
     'middleware' => 'auth:api'
 ], function () {
