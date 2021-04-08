@@ -75,6 +75,8 @@ Route::get('game_cate_list', "GameController@cateGamesList");
 Route::get('game_open_ones', "GameController@againTime");
 #彩票列表
 Route::get('game_all', "GameController@game_all");
+#直播列表
+Route::get('game_live_list', "GameController@getLiveList");
 //Route::get('check_old_mobile', "UserController@checkMobile");
 Route::group([
     'middleware' => 'auth:api'

@@ -46,6 +46,39 @@ class GameController extends BaseController
 
 
     /**
+     * @desc 直播列表
+     * @method route
+     * @route /game_live_list
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getLiveList()
+    {
+        try {
+            $rows = $this->kind->where(array('video' => 1, 'none' => 0))->orderBy('id', 'desc')->get(['id', 'icon', 'date', 'abbr']);
+            foreach ($rows as $key => $value) {
+                $arr = $this->open->where(array('kid' => $value['id']))->orderBy('id', 'desc')->first(['periods', 'number', 'time']);
+                if ($value['abbr'] != 'hk6') {
+                    $type = explode("/", $value['date']);
+                    $rows[$key]['down'] = $this->timeCal($arr, $type);
+                } else {
+                    $sxNumber = $this->getLhcTime($arr['number']);
+                    $prev = date('d', $arr['time']);
+                    if ($sxNumber['kj'] == $prev) {
+                        $rows[$key]['down'] = $sxNumber['down'];
+                    } else {
+                        $rows[$key]['down'] = 0;
+                    }
+                }
+            }
+            if ($rows) return $this->_success($rows);
+            return $this->_error('未获取到内容');
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+    }
+
+
+    /**
      * @desc 获取单个开奖记录
      * @param id 彩种id
      * @method get
@@ -56,7 +89,7 @@ class GameController extends BaseController
     {
         try {
             $id = $this->input->get('id');
-            if(empty($id)) return $this->_error(self::PARAM_FAIL);
+            if (empty($id)) return $this->_error(self::PARAM_FAIL);
             $row = $this->kind->where('id', $id)
                 ->orderBy('id', 'desc')
                 ->first(['name', 'icon', 'date', 'abbr', 'video']);
@@ -66,7 +99,7 @@ class GameController extends BaseController
                 ->first(['periods', 'number', 'time', 'next_time']);
             $row['periods'] = $arr['periods'];
             $row['number'] = $arr['number'];
-            if(empty($row) || empty($arr)) return $this->_error(self::DATA_NULL);
+            if (empty($row) || empty($arr)) return $this->_error(self::DATA_NULL);
 //            var_dump($row);die;
             if (true) {
                 $type = explode("/", $row['date']);
@@ -233,7 +266,7 @@ class GameController extends BaseController
             }
             $row = $this->kind->where('id', $id)->first(['abbr', 'name', 'code']);
 
-            if($info) foreach ($info as $key =>&$v) $v->number=explode(',', $v->number);
+            if ($info) foreach ($info as $key => &$v) $v->number = explode(',', $v->number);
 
             if ($info) return $this->_success(['info' => $info, 'abbr' => $row['abbr'], 'name' => $row['name'], 'code' => $row['code']]);
             return $this->_error();
@@ -259,9 +292,9 @@ class GameController extends BaseController
             $info = $this->open->where('kid', $id)
                 ->orderBy('id', 'desc')
                 ->limit($limit)->get(['periods', 'number', 'adds', 'time'])->toArray();
-            if($info){
-                foreach ($info as $key =>&$v){
-                    $v['number']=explode(',',$v['number']);
+            if ($info) {
+                foreach ($info as $key => &$v) {
+                    $v['number'] = explode(',', $v['number']);
                 }
             }
             return $this->_success($info);
@@ -276,37 +309,38 @@ class GameController extends BaseController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getPlanRecord(){
-        try{
-        //获取参数
-        $limit = $this->input->get('num', 20);
-        $id = $this->input->get('id');
-        if(empty($id) || empty($limit)) return $this->_error(self::PARAM_FAIL);
-        if (in_array($id, [11])) {
-            $info = $this->open->where('kid', $id)
-                ->orderBy(DB::raw('periods * 1'), 'desc')
-                ->limit($limit)
-                ->get(['id','periods','number','value','time']);
-        } else {
-            $info = $this->open->where('kid', $id)
-                ->orderBy('id','desc')
-                ->limit($limit)
-                ->get(['id','periods','number','value','time']);
-        }
-        foreach ($info as $key => $value) $info[$key]['value'] = unserialize($value['value']);
-        $row = $this->kind->where('id',$id)->first(['abbr','name','code']);
-        //生肖计算
-        $sx = unserialize(env('SHENXIAO'));
-        if($row['abbr'] == 'hk6' || $row['abbr'] == 'xjp' || $row['abbr'] == 'amlhc'|| $row['abbr'] == 'twlh'){
-            foreach ($info as $key => $value) {
-                //字符串转数组
-                $numArr = explode(',',$value['number']);
-                $sxNumber = array();
-                foreach ($numArr as $k => $v) foreach ($sx as $i => $j)  if(in_array($v, $j)) $sxNumber[$k] = $i;
-                $info[$key]['sx'] = $sxNumber;
+    public function getPlanRecord()
+    {
+        try {
+            //获取参数
+            $limit = $this->input->get('num', 20);
+            $id = $this->input->get('id');
+            if (empty($id) || empty($limit)) return $this->_error(self::PARAM_FAIL);
+            if (in_array($id, [11])) {
+                $info = $this->open->where('kid', $id)
+                    ->orderBy(DB::raw('periods * 1'), 'desc')
+                    ->limit($limit)
+                    ->get(['id', 'periods', 'number', 'value', 'time']);
+            } else {
+                $info = $this->open->where('kid', $id)
+                    ->orderBy('id', 'desc')
+                    ->limit($limit)
+                    ->get(['id', 'periods', 'number', 'value', 'time']);
             }
-        }
-            return $this->_success(array('info'=>$info,'abbr'=>$row['abbr'],'name'=>$row['name'],'code'=>$row['code']));
+            foreach ($info as $key => $value) $info[$key]['value'] = unserialize($value['value']);
+            $row = $this->kind->where('id', $id)->first(['abbr', 'name', 'code']);
+            //生肖计算
+            $sx = unserialize(env('SHENXIAO'));
+            if ($row['abbr'] == 'hk6' || $row['abbr'] == 'xjp' || $row['abbr'] == 'amlhc' || $row['abbr'] == 'twlh') {
+                foreach ($info as $key => $value) {
+                    //字符串转数组
+                    $numArr = explode(',', $value['number']);
+                    $sxNumber = array();
+                    foreach ($numArr as $k => $v) foreach ($sx as $i => $j) if (in_array($v, $j)) $sxNumber[$k] = $i;
+                    $info[$key]['sx'] = $sxNumber;
+                }
+            }
+            return $this->_success(array('info' => $info, 'abbr' => $row['abbr'], 'name' => $row['name'], 'code' => $row['code']));
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
         }
@@ -456,7 +490,7 @@ class GameController extends BaseController
      * @param false $xjp 是否为新加坡 bool
      * @return false|int
      */
-    private function timeCal($arr,$type, $xjp = false)
+    private function timeCal($arr, $type, $xjp = false)
     {
         if ($xjp) {
             // 单独计算新加坡彩
