@@ -139,7 +139,6 @@ class GameController extends BaseController
             $row['periods'] = $arr['periods'];
             $row['number'] = $arr['number'];
             if (empty($row) || empty($arr)) return $this->_error(self::DATA_NULL);
-//            var_dump($row);die;
             if (true) {
                 $type = explode("/", $row['date']);
                 $row['down'] = $this->timeCal($arr, $type);
@@ -292,6 +291,8 @@ class GameController extends BaseController
         try {
             $limit = $this->input->get('num', 20);
             $id = $this->input->get('id');
+
+
             if (empty($id)) return $this->_error(self::PARAM_FAIL);
             $db_record = DB::table('record');
             if ($id == 28 || $id == 23 || $id == 41 || $id == 1) {
@@ -332,14 +333,15 @@ class GameController extends BaseController
 
         if(!in_array($id,$this->kind->other)) return $this->_error(self::PARAM_NOT_EXISTS);
         $info = $this->open->where(array('kid'=>$id))
-            ->orderBy(DB::raw('periods * 1'), 'desc')
+            ->orderBy('periods', 'desc')
             ->limit($limit)->get(['periods','number','adds','time','next_time'])->toArray();
         foreach($info as $k => &$v) {
-            $ex=explode('|',$v['adds']);
+           $ex=explode('|',$v['adds']);
            $v=array(
                 'periods'=>$v['periods'],
                 'wx'=>explode(",",$ex[1]),
                 'sx'=>explode(",",$ex[0]),
+                'color'=>explode(",",$ex[2]),
                 'number'=> explode(',', $v['number']),
                 'next_time'=>date('Y-m-d H:i:s',$v['next_time']),
                 'time'=>date('Y-m-d H:i:s',$v['time']),

@@ -466,8 +466,10 @@ class BaseController extends Controller{
     {
         try {
             if(empty($file)) return true;
-            $path = public_path('user') . '\\' . $file;
-            unlink($path);
+             #判断是否系统头像
+            if(stripos($file,'default')===0) return true;
+            $path = public_path('user') . '/' . $file;
+            if(is_file($path)) unlink($path);
             return true;
         } catch (\Exception $ex) {
             throw new \Exception($ex->getMessage());

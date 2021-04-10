@@ -585,7 +585,7 @@ class UserController extends BaseController
             $input['password'] = Hash::make(strtolower($input['password'])); #laravel Auth验证密码必须hash密码
 //            $input['avatar'] = $image->imageUrl(300, 300);
             $input['signature']   = '这个人很懒什么都没留下!';
-            $input['avatar']   = 'default0.png';
+            $input['avatar']   = 'default'.rand(0,12).'.png';
             $input['login_time'] = Carbon::now()->toDateTimeString();
 //            $minGrade = $this->grade->getMinGrade();
 //            if ($minGrade === false) return $this->_error(self::ADD_DATA_FAILED);
