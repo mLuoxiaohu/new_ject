@@ -83,6 +83,8 @@ Route::get('game_live_all', "GameController@gatLiveAllGame");
 Route::get('game_lh_special', "GameController@lhcSpecial");
 #香港澳门新加坡开奖
 Route::get('game_open_other', "GameController@gameOpenOther");
+#GET
+Route::get('game_ttl', "IndexController@plan");
 Route::group([
     'middleware' => 'auth:api'
 ], function () {

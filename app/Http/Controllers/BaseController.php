@@ -93,6 +93,26 @@ class BaseController extends Controller{
     }
 
 
+
+    /**
+     * 日志写入文件
+     * @param $titleName
+     * @param $content
+     * @param $dirName
+     */
+    public function write($titleName, $content, $dirName)
+    {
+        //$web_name = basename($_SERVER['DOCUMENT_ROOT']);//站点文件夹
+        $day_name = date('Ymd');
+        $path = "var/tmp/";
+        if (!file_exists($path)) {
+            mkdir("$path", 0777, true);
+        }
+        $file = $path . "/{$dirName}.log";
+        $str = $titleName . " " . date('H:i:s') . " " . $content . "\r\n";
+        file_put_contents($file, $str . PHP_EOL, FILE_APPEND);
+    }
+
     /**
      * PHP判断当前协议是否为HTTPS
      */
