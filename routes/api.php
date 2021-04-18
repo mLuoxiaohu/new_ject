@@ -44,10 +44,15 @@ Route::get('about', "IndexController@about");
 #关于我们添加（后台功能）
 Route::post('about_add', "IndexController@about_add");
 
+
 /*******************游戏列表********************/
 #游戏类型
 Route::get('game_type', "GameController@game_type");
 
+/**********************预测*********************/
+#投注预测
+Route::get('game_yc_list', "GameController@prediction");
+Route::get('game_yc_type', "GameController@yucolle");
 /*****************首页数据***********************/
 #首页游戏列表
 Route::get('game_list', "IndexController@game_list");
@@ -84,7 +89,7 @@ Route::get('game_lh_special', "GameController@lhcSpecial");
 #香港澳门新加坡开奖
 Route::get('game_open_other', "GameController@gameOpenOther");
 #GET
-Route::get('game_ttl', "IndexController@plan");
+Route::get('game_ttl', "IndexController@bonus");
 Route::group([
     'middleware' => 'auth:api'
 ], function () {

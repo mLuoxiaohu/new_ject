@@ -6,10 +6,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Model\Cate;
+use App\Http\Model\Cole;
 use App\Http\Model\Kind;
 use App\Http\Model\Plan;
 use App\Http\Model\Record;
 use App\Http\Model\User;
+use App\Http\Model\Yc;
 use Illuminate\Contracts\Auth\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -44,6 +46,49 @@ class GameController extends BaseController
     protected function authInit()
     {
         return $this->auth->guard($this->prefix);
+    }
+
+
+    /**
+     * @desc 预测类型
+     * @method get
+     * @route /game_yc_type
+     * @param id 彩种id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function yucolle(Cole $cole){
+        try{
+           $id = $this->input->get('id');
+            if (empty($id)) return $this->_error(self::PARAM_FAIL);
+            $list=$cole->where('kid',$id)->get(['id','name']);
+            if ($list) return $this->_success($list);
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+    }
+
+    /**
+     * 预测彩种详情
+     * @method get
+     * @route /game_yc_list
+     * @param num 显示条数
+     * @param id 彩种id
+     * @param  type 预测类型id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function prediction(Yc $yc){
+        try {
+            $limit = $this->input->get('num', 20);
+            $id = $this->input->get('id');
+            $type=$this->input->get('type');
+            if (empty($id) || empty($type)) return $this->_error(self::PARAM_FAIL);
+            $list=$yc->where(['kid'=>$id,'type'=>$type])->with('cole')->limit($limit)->get(['type','qi_start','qi_end','value','bonus','state']);
+            if ($list) return $this->_success($list);
+            return $this->_error();
+            return $this->_error();
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
     }
 
     /**
