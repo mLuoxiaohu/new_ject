@@ -231,7 +231,6 @@ class GameController extends BaseController
                     $row['down'] = $this->timeCal($arr, '', true);
                 }
             } else {
-//            print_r($row['abbr']);exit;
                 $prev = date('d', $arr['time']);  // record 4
                 $sxNumber = $this->getLhcTime($arr['number']); // record
                 $row['sxlist'] = $sxNumber['sxNumber'];
