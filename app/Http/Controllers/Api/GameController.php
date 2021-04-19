@@ -14,9 +14,7 @@ use App\Http\Model\User;
 use App\Http\Model\Yc;
 use Illuminate\Contracts\Auth\Factory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use phpDocumentor\Reflection\Types\Self_;
 use Tymon\JWTAuth\Contracts\Providers\JWT;
 
 class GameController extends BaseController

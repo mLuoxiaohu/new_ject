@@ -94,6 +94,12 @@ Route::group([
     'middleware' => 'auth:api'
 ], function () {
     /************************用户类**************************/
+    #我的收藏
+    Route::get('self_store_list', "UserController@game_store_list");
+    #取消收藏彩种
+    Route::get('game_remove_store', "UserController@game_remove_store");
+    #收藏彩种
+    Route::get('game_store', "UserController@game_store");
     #修改资料
     Route::post('change', "UserController@userUpdate");
     #获取个人信息

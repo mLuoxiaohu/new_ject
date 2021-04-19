@@ -6,8 +6,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Model\Opinion;
+use App\Http\Model\Store;
 use App\Http\Model\User;
 use Carbon\Carbon;
+use phpDocumentor\Reflection\Types\Self_;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Contracts\Auth\Factory;
 use Illuminate\Http\Request;
@@ -46,6 +48,65 @@ class UserController extends BaseController
         $this->user = $user;
 
     }
+
+    /**
+     * @desc 我的收藏
+     * @route get
+     * @route /self_store_list
+     * @param Store $store
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function game_store_list(Store $store){
+        try{
+         $list= $store->where('uid',$this->authInit()->id())->with('kind')->get();
+         return $this->_success($list);
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+    }
+
+
+    /***
+     * @desc 收藏彩种
+     * @param id 彩种id
+     * @route /game_store
+     * @method get
+     * @return \Illuminate\Http\JsonResponse\
+     */
+   public function game_store(Store $store,Request $request){
+        try{
+          $id=$request->get('id');
+          $result=$store->where(['lottery_id'=>$id,'uid'=>$this->authInit()->id()])->first();
+          if($result) return $this->_error(self::COLLECTION_STORE_FAIL);
+         $is_success= $store->create(['lottery_id'=>$id,'uid'=>$this->authInit()->id()]);
+         if($is_success) return $this->_success();
+         return $this->_error(self::COLLECTION_STORE_SUCCESS);
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+   }
+
+
+    /***
+     * @desc 取消收藏彩种
+     * @param id 彩种id
+     * @route /game_remove_store
+     * @method get
+     * @return \Illuminate\Http\JsonResponse\
+     */
+    public function game_remove_store(Store $store,Request $request){
+        try{
+            $id=$request->get('id');
+            $result=$store->where(['lottery_id'=>$id,'uid'=>$this->authInit()->id()])->first();
+            if(!$result) return $this->_error(self::DATA_NULL);
+            $is_success= $result->delete();
+            if($is_success) return $this->_success();
+            return $this->_error(self::STORE_CANCEL);
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+    }
+
      /********************留言**************/
     /**
      * @desc 用户留言
