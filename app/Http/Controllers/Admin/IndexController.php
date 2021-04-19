@@ -16,4 +16,7 @@ class IndexController extends BaseController
 
         return view('admin.index');
     }
+
+
+
 }

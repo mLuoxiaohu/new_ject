@@ -79,6 +79,7 @@ class BaseController extends Controller
     const ARTICLE_FAIL_SUCCESS = '发帖失败';
     const PARAM_FAIL = '参数错误';
     const PARAM_NOT_EXISTS = '参数不在设定范围内';
+    const THE_LOTTERY_NULL ='当前彩种未找到或已关闭';
 
     /**
      * 公共邮箱发送验证

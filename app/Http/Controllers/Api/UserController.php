@@ -49,21 +49,7 @@ class UserController extends BaseController
 
     }
 
-    /**
-     * @desc 我的收藏
-     * @route get
-     * @route /self_store_list
-     * @param Store $store
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function game_store_list(Store $store){
-        try{
-         $list= $store->where('uid',$this->authInit()->id())->with('kind')->get();
-         return $this->_success($list);
-        } catch (\Exception $ex) {
-            return $this->_error($ex->getMessage());
-        }
-    }
+
 
 
     /***

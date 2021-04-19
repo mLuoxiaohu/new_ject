@@ -8,8 +8,10 @@ use App\Http\Controllers\BaseController;
 use App\Http\Model\Cate;
 use App\Http\Model\Cole;
 use App\Http\Model\Kind;
+use App\Http\Model\Opinion;
 use App\Http\Model\Plan;
 use App\Http\Model\Record;
+use App\Http\Model\Store;
 use App\Http\Model\User;
 use App\Http\Model\Yc;
 use Illuminate\Contracts\Auth\Factory;
@@ -46,6 +48,46 @@ class GameController extends BaseController
         return $this->auth->guard($this->prefix);
     }
 
+
+    /**
+     * @desc 我的收藏
+     * @route get
+     * @route /self_store_list
+     * @param Store $store
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function game_store_list(Store $store){
+        try{
+            $list= $store->where('uid',$this->authInit()->id())->pluck('lottery_id');
+            $rows = $this->kind->where(['none' => 0])->whereIn('id',$list)
+                ->orderBy('sort', 'asc')
+                ->get(['id', 'name', 'icon', 'date', 'abbr', 'video']);
+            if(!$rows) return $this->_error(self::THE_LOTTERY_NULL);
+            foreach ($rows as $key => &$value) {
+                $arr = $this->open->where('kid', $value['id'])
+                    ->orderBy('id', 'desc')
+                    ->first(['kid', 'periods', 'number', 'time', 'next_time', 'adds']);
+                $rows[$key]['periods'] = $arr['periods'];
+                $rows[$key]['number'] = $arr['number'];
+                if (in_array($arr['kid'], [18, 37, 38, 40])) {
+                    $sxNumber = $this->getLhcOpenInfo($arr['adds']);
+                } else {
+                    $sxNumber = $this->getLhcTime($arr['number']);
+                }
+
+                $rows[$key]['sxlist'] = $sxNumber['sxNumber'];
+                $type = explode("/", $value['date']);
+                $rows[$key]['down'] = $this->timeCal($arr, $type);
+
+                if ($rows[$key]['abbr'] == 'xjp' || $rows[$key]['abbr'] == 'amlhc' || $rows[$key]['abbr'] == 'hk6' || $rows[$key]['abbr'] == 'twlh') {
+                    $rows[$key]['down'] = $this->timeCal($arr, '', true);
+                }
+            }
+                return $this->_success($rows);
+            } catch (\Exception $ex) {
+                return $this->_error($ex->getMessage());
+            }
+    }
 
     /**
      * @desc 预测类型
@@ -180,7 +222,7 @@ class GameController extends BaseController
                 ->orderBy('time', 'desc')
                 ->first(['periods', 'number', 'time', 'next_time']);
             $row['periods'] = $arr['periods'];
-            $row['number'] = $arr['number'];
+            $row['number'] = explode(",",$arr['number']);
             if (empty($row) || empty($arr)) return $this->_error(self::DATA_NULL);
             if (true) {
                 $type = explode("/", $row['date']);

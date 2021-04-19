@@ -22,6 +22,11 @@ class Store extends Model
     protected $hidden=['update_time'];
 
     public function kind(){
-        return $this->hasOne(Kind::class,'id','lottery_id');
+        return $this->hasOne(Kind::class,'id','lottery_id')->select('id', 'name', 'icon', 'date', 'abbr', 'video');
     }
+
+
+
+
+
 }
