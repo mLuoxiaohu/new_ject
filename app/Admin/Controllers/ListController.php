@@ -40,8 +40,8 @@ class ListController extends AdminController
           return "<img src='{$avatar}' width='80' height='80'>";
         });
         $states = [
-            'on'  => ['value' => 1, 'text' => '正常', 'color' => 'primary'],
-            'off' => ['value' => 2, 'text' => '禁止', 'color' => 'default'],
+            'on'  => ['value' => '1', 'text' => '正常', 'color' => 'primary'],
+            'off' => ['value' => '2', 'text' => '禁止', 'color' => 'default'],
         ];
         $grid->column('state', '状态')->switch($states);
         $grid->column('login_ip','登录IP');
@@ -83,8 +83,8 @@ class ListController extends AdminController
         $form->text('nickname','用户昵称');
         $form->text('mobile','用户手机号');
         $form->select('state', '状态')->options([
-            1 => '正常',
-            2 => '禁用',
+            '1' => '正常',
+            '2' => '禁用',
         ]);
 //        $form->file('avatar','头像');
         $form->image('avatar','头像')->removable()->uniqueName();

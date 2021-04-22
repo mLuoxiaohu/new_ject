@@ -31,8 +31,8 @@ class LeaveMsg extends AdminController
         });
         // 设置text、color、和存储值
         $states = [
-            'on'  => ['value' => 2, 'text' => '通过', 'color' => 'primary'],
-            'off' => ['value' => 3, 'text' => '不通过', 'color' => 'default'],
+            'on'  => ['value' => '2', 'text' => '通过', 'color' => 'primary'],
+            'off' => ['value' => '3', 'text' => '不通过', 'color' => 'default'],
         ];
         $grid->column('state', '审核状态')->switch($states);
         $grid->column('create_time',trans('admin.created_at'));
@@ -56,7 +56,7 @@ class LeaveMsg extends AdminController
         $form->text('nickname','用户昵称');
         $form->text('mobile','用户手机号');
         $form->select('state', '状态')->options([
-            2=>'审核通过',3=>'未通过'
+            '2'=>'审核通过','3'=>'未通过'
         ]);
         $form->textarea('content','评论内容');
         $form->image('avatar','头像')->removable()->uniqueName();
