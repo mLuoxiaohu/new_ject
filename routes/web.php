@@ -14,7 +14,8 @@
 //Route::get('/', function () {
 //    return view('welcome');
 //});
-
+#安装后台库
+//composer require encore/laravel-admin:1.*
 
 Route::get('index', "IndexController@index");
 Route::group([

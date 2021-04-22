@@ -2,11 +2,13 @@
 
 namespace App\Http\Model;
 use App\Http\Controllers\BaseController;
+use Encore\Admin\Traits\DefaultDatetimeFormat;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 class User extends Authenticatable implements JWTSubject
 {
+    use DefaultDatetimeFormat;
     use Notifiable;
 //    protected $dateFormat = 'U';  #是否为时间戳
     const CREATED_AT = 'create_time';

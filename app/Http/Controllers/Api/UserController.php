@@ -50,8 +50,6 @@ class UserController extends BaseController
     }
 
 
-
-
     /***
      * @desc 收藏彩种
      * @param id 彩种id
@@ -59,18 +57,19 @@ class UserController extends BaseController
      * @method get
      * @return \Illuminate\Http\JsonResponse\
      */
-   public function game_store(Store $store,Request $request){
-        try{
-          $id=$request->get('id');
-          $result=$store->where(['lottery_id'=>$id,'uid'=>$this->authInit()->id()])->first();
-          if($result) return $this->_error(self::COLLECTION_STORE_FAIL);
-         $is_success= $store->create(['lottery_id'=>$id,'uid'=>$this->authInit()->id()]);
-         if($is_success) return $this->_success();
-         return $this->_error(self::COLLECTION_STORE_SUCCESS);
+    public function game_store(Store $store, Request $request)
+    {
+        try {
+            $id = $request->get('id');
+            $result = $store->where(['lottery_id' => $id, 'uid' => $this->authInit()->id()])->first();
+            if ($result) return $this->_error(self::COLLECTION_STORE_FAIL);
+            $is_success = $store->create(['lottery_id' => $id, 'uid' => $this->authInit()->id()]);
+            if ($is_success) return $this->_success();
+            return $this->_error(self::COLLECTION_STORE_SUCCESS);
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
         }
-   }
+    }
 
 
     /***
@@ -80,20 +79,21 @@ class UserController extends BaseController
      * @method get
      * @return \Illuminate\Http\JsonResponse\
      */
-    public function game_remove_store(Store $store,Request $request){
-        try{
-            $id=$request->get('id');
-            $result=$store->where(['lottery_id'=>$id,'uid'=>$this->authInit()->id()])->first();
-            if(!$result) return $this->_error(self::DATA_NULL);
-            $is_success= $result->delete();
-            if($is_success) return $this->_success();
+    public function game_remove_store(Store $store, Request $request)
+    {
+        try {
+            $id = $request->get('id');
+            $result = $store->where(['lottery_id' => $id, 'uid' => $this->authInit()->id()])->first();
+            if (!$result) return $this->_error(self::DATA_NULL);
+            $is_success = $result->delete();
+            if ($is_success) return $this->_success();
             return $this->_error(self::STORE_CANCEL);
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
         }
     }
 
-     /********************留言**************/
+    /********************留言**************/
     /**
      * @desc 用户留言
      * @route api/leave_message
@@ -102,32 +102,33 @@ class UserController extends BaseController
      * @param content 内容
      * @return \Illuminate\Http\JsonResponse
      */
-   public function leave_message(Opinion $opinion,Request $request){
-       try{
-           $param = [
-               "name" => "required|min:1|max:14",
-               "content" => "required|min:1",
-           ];
-           $message = [
-               "name.required" => "名称不能为空",
-               "name.unique" => '名称已存在',
-               "name.min" => '名称不能小于1个字符，大于14个字符',
-               "name.max" => '名称不能小于1个字符，大于14个字符',
-               'content.required' => '内容不能为空',
-               "content.min" => "内容不能小于1个字符",
-           ];
-           if (!$this->BaseValidator($request, $param, $message, $error)) return $this->_error($error);
-           $input = $this->getParams($request);
-           $input['nickname'] = $this->replaceDox($input['name']);
-           $input['content'] = $this->replaceDox($input['content']);
-           $input['avatar']='default'.rand(0,13).'.png';
-           $result= $opinion->create($input);
-           if($result) return $this->_success();
-           return $this->_error();
-       } catch (\Exception $ex) {
-           return $this->_error($ex->getMessage());
-       }
-   }
+    public function leave_message(Opinion $opinion, Request $request)
+    {
+        try {
+            $param = [
+                "name" => "required|min:1|max:14",
+                "content" => "required|min:1",
+            ];
+            $message = [
+                "name.required" => "名称不能为空",
+                "name.unique" => '名称已存在',
+                "name.min" => '名称不能小于1个字符，大于14个字符',
+                "name.max" => '名称不能小于1个字符，大于14个字符',
+                'content.required' => '内容不能为空',
+                "content.min" => "内容不能小于1个字符",
+            ];
+            if (!$this->BaseValidator($request, $param, $message, $error)) return $this->_error($error);
+            $input = $this->getParams($request);
+            $input['nickname'] = $this->replaceDox($input['name']);
+            $input['content'] = $this->replaceDox($input['content']);
+            $input['avatar'] = 'default' . rand(0, 13) . '.png';
+            $result = $opinion->create($input);
+            if ($result) return $this->_success();
+            return $this->_error();
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+    }
 
     /**
      * @desc 用户留言列表
@@ -137,20 +138,20 @@ class UserController extends BaseController
      * @route /api/leave_message_list
      * @return \Illuminate\Http\JsonResponse
      */
-   public function leave_message_list(Opinion $opinion,Request $request){
-       try{
-           $num=$request->get('num',10);
-           $result= $opinion->with(['children'=>function($sql){
-               $sql->where('state','2');
-           }])
-               ->where(['state'=>'2','pid'=>0])->paginate($num,['nickname','avatar','id','content','create_time']);
-           if($result) return $this->_success($result);
-           return $this->_error();
-       } catch (\Exception $ex) {
-           return $this->_error($ex->getMessage());
-       }
-   }
-
+    public function leave_message_list(Opinion $opinion, Request $request)
+    {
+        try {
+            $num = $request->get('num', 10);
+            $result = $opinion->with(['children' => function ($sql) {
+                $sql->where('state', '2');
+            }])
+                ->where(['state' => '2', 'pid' => 0])->paginate($num, ['nickname', 'avatar', 'id', 'content', 'create_time']);
+            if ($result) return $this->_success($result);
+            return $this->_error();
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+    }
 
 
     /**
@@ -159,17 +160,18 @@ class UserController extends BaseController
      * @method get
      * @return \Illuminate\Http\JsonResponse
      */
-   public function randAvatar(){
-       try {
-           $data=[];
-           for ($i=0;$i < 13;$i++) {
-              $data[$i]=(BaseController::is_https() ? 'https://':'http://').($_SERVER["HTTP_HOST"] ?? $_SERVER['SERVER_ADDR'] ).'/user/'.'default'.$i.'.png';
-           }
-           return $this->_success($data);
-       } catch (\Exception $ex) {
-           return $this->_error($ex->getMessage());
-       }
-   }
+    public function randAvatar()
+    {
+        try {
+            $data = [];
+            for ($i = 0; $i < 13; $i++) {
+                $data[$i] = (BaseController::is_https() ? 'https://' : 'http://') . ($_SERVER["HTTP_HOST"] ?? $_SERVER['SERVER_ADDR']) . '/user/' . 'default' . $i . '.png';
+            }
+            return $this->_success($data);
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+    }
 
     /**
      * @desc 个人信息
@@ -196,8 +198,8 @@ class UserController extends BaseController
     public function bolgDetail($uid)
     {
         try {
-            $userRe = $this->user->withCount(['article','articleStore'=>function($sql){
-                $sql->where('is_delete',1);
+            $userRe = $this->user->withCount(['article', 'articleStore' => function ($sql) {
+                $sql->where('is_delete', 1);
             }])->find($uid);
             return $this->_success($userRe);
         } catch (\Exception $ex) {
@@ -327,7 +329,7 @@ class UserController extends BaseController
             $check = $this->getParams($request);
 //            if (Cache::get($check['key']) != $check['code']) return $this->_error(self::CODE_ERROR);
 //            Cache::forget($check['key']); #验证成功删除缓存
-            unset($check['code'],$check['key']);
+            unset($check['code'], $check['key']);
             $auth = $this->authInit();
             $this->jwt->setSecret(config('jwt.' . $this->prefix . '_secret')); #切换认证secret模块
             if (!$token = $auth->attempt($check)) {
@@ -370,14 +372,14 @@ class UserController extends BaseController
             $param = [
                 "mobile" => "regex:/^1[3456789][0-9]{9}$/",
                 'password' => 'min:6|max:14',
-                'signature'=>'min:6|max:40',
-                'confirm_password'=>'same:password',
+                'signature' => 'min:6|max:40',
+                'confirm_password' => 'same:password',
                 'avatar' => ['mimes:jpeg,bmp,png,gif,jpg'],
             ];
             $message = [
                 "password.min" => "密码不能小于6位",
                 "password.max" => "密码不能大于18位",
-                'confirm_password.same'=>'确认密码和新密码不一致',
+                'confirm_password.same' => '确认密码和新密码不一致',
                 "signature.min" => "个性签名不能小于6位",
                 "signature.max" => "个性签名不能大于40位",
                 'avatar.mimes' => '只支持图片:jpeg,bmp,png,jpg,gif 格式!'
@@ -393,17 +395,17 @@ class UserController extends BaseController
             }
             #删除旧图片
             if (isset($input['avatar'])) {
-                $old =explode('/',$auth->user()->avatar);
-                $old_Img=$old[count($old) - 1];
+                $old = explode('/', $auth->user()->avatar);
+                $old_Img = $old[count($old) - 1];
                 if (!empty($old_Img)) $this->deleteFile($old_Img);
             }
             if (count($input) <= 0) return $this->_error(self::NOT_CHANGE_CONTENT);
             #手机修改
             if (isset($input['mobile'])) {
-                if(Cache::get($id) == null || Cache::get($id) !=1) return $this->_error(self::OLD_MOBILE_EXPIRED);
+                if (Cache::get($id) == null || Cache::get($id) != 1) return $this->_error(self::OLD_MOBILE_EXPIRED);
                 $mobile = $input['mobile'];
-                $is_mobile=$this->user->where('id','!=',$id)->where('mobile',$mobile)->value('id');
-                if($is_mobile) return $this->_error(self::MOBILE_EXISTS);
+                $is_mobile = $this->user->where('id', '!=', $id)->where('mobile', $mobile)->value('id');
+                if ($is_mobile) return $this->_error(self::MOBILE_EXISTS);
                 if (!isset($input['code'])) return $this->_error(self::INPUT_CODE);
                 if (Cache::get($mobile) == null || Cache::get($mobile) != $input['code']) return $this->_error(self::CODE_ERROR);
             }
@@ -418,7 +420,7 @@ class UserController extends BaseController
                 ];
                 unset($input['old_password']);
                 if (!$auth->attempt($check)) return $this->_error(self::OLD_PASSWORD_FAILED);
-                $input['password']=Hash::make($input['password']);
+                $input['password'] = Hash::make($input['password']);
             }
             $result = $this->user->where('id', $id)->update($input);
             if (!$result) return $this->_error(self::UPDATE_FAIL);
@@ -428,7 +430,7 @@ class UserController extends BaseController
             #更新数据
             $user = $this->user->find($id);
             $auth->login($user);
-            if(isset($input['mobile'])) Cache::forget($id);
+            if (isset($input['mobile'])) Cache::forget($id);
             return $this->_success(['token' => $newToken, 'user' => $auth->user(), 'token_type' => 'Authorization'], self::UPDATE_SUCCESS);
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
@@ -448,8 +450,8 @@ class UserController extends BaseController
     {
         try {
             $param = [
-                "mobile" => ['required','regex:/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199|(147))\d{8}$/'],
-                'password' =>['min:6','max:14'],
+                "mobile" => ['required', 'regex:/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199|(147))\d{8}$/'],
+                'password' => ['min:6', 'max:14'],
                 'code' => ['required'],
             ];
             $message = [
@@ -485,20 +487,21 @@ class UserController extends BaseController
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function checkMobile(Request $request){
-         try{
-             $code=$request->request->get('code');
-             $old_mobile=$request->request->get('mobile');
-             if(empty($code) || empty($old_mobile)) return $this->_error(self::PARAM_FAIL);
-             $id=$this->authInit()->id();
-             $mobile= $old_mobile.(string)$id;
-             if (Cache::get($mobile) == null || Cache::get($mobile) != $code) return $this->_error(self::CODE_ERROR);
-             Cache::add($id,1,240);
-             Cache::forget($mobile);
-             return $this->_success([],self::CHECK_SUCCESS);
-         } catch (\Exception $ex) {
-             return $this->_error($ex->getMessage());
-         }
+    public function checkMobile(Request $request)
+    {
+        try {
+            $code = $request->request->get('code');
+            $old_mobile = $request->request->get('mobile');
+            if (empty($code) || empty($old_mobile)) return $this->_error(self::PARAM_FAIL);
+            $id = $this->authInit()->id();
+            $mobile = $old_mobile . (string)$id;
+            if (Cache::get($mobile) == null || Cache::get($mobile) != $code) return $this->_error(self::CODE_ERROR);
+            Cache::add($id, 1, 240);
+            Cache::forget($mobile);
+            return $this->_success([], self::CHECK_SUCCESS);
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
     }
 
     /**
@@ -526,22 +529,22 @@ class UserController extends BaseController
             #end:结束
             /*********分割**********/
             #start:上线以后注释以下代码
-            $id=$this->authInit()->id();
-            if($id){
-                $code = Cache::get($mobile.$id);
-            }else{
+            $id = $this->authInit()->id();
+            if ($id) {
+                $code = Cache::get($mobile . $id);
+            } else {
                 $code = Cache::get($mobile);
             }
             if (!$code) {
                 $code = rand(1000, 9999);
-                if($id){
-                    Cache::add($mobile.$id, $code, 240); //60
-                }else{
+                if ($id) {
+                    Cache::add($mobile . $id, $code, 240); //60
+                } else {
                     Cache::add($mobile, $code, 60); //60
                 }
             }
             $content = "【柒柒科技】您的验证码：{$code} 有效期60秒请尽快使用。";
-            return $this->_success(['code'=>$code], $content);
+            return $this->_success(['code' => $code], $content);
             #end:结束
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
@@ -604,8 +607,8 @@ class UserController extends BaseController
         DB::beginTransaction();
         try {
             $param = [
-                "mobile" => ['required','unique:users','regex:/^1[3456789][0-9]{9}$/'],
-                "password" => ['required','regex:/^[a-z\d_]{6,14}$/i'],
+                "mobile" => ['required', 'unique:users', 'regex:/^1[3456789][0-9]{9}$/'],
+                "password" => ['required', 'regex:/^[a-z\d_]{6,14}$/i'],
                 "code" => "required",
             ];
             $message = [
@@ -613,7 +616,7 @@ class UserController extends BaseController
                 "mobile.required" => "手机号不能为空",
                 "mobile.regex" => "手机号格式不正确",
                 "password.required" => "密码不能为空",
-                'password.regex'=>'密码只能为只能为数字母6~14位',
+                'password.regex' => '密码只能为只能为数字母6~14位',
                 'code.required' => '请输入验证码',
             ];
             if (!$this->BaseValidator($request, $param, $message, $error)) return $this->_error($error);
@@ -631,8 +634,8 @@ class UserController extends BaseController
             $input['login_ip'] = $request->getClientIp();
             $input['password'] = Hash::make(strtolower($input['password'])); #laravel Auth验证密码必须hash密码
 //            $input['avatar'] = $image->imageUrl(300, 300);
-            $input['signature']   = '这个人很懒什么都没留下!';
-            $input['avatar']   = 'default'.rand(0,12).'.png';
+            $input['signature'] = '这个人很懒什么都没留下!';
+            $input['avatar'] = 'default' . rand(0, 12) . '.png';
             $input['login_time'] = Carbon::now()->toDateTimeString();
 //            $minGrade = $this->grade->getMinGrade();
 //            if ($minGrade === false) return $this->_error(self::ADD_DATA_FAILED);
@@ -651,8 +654,8 @@ class UserController extends BaseController
             unset($obj, $input);
             if (!$reg) return $this->_error(self::REGISTER_ERROR);
             DB::commit();
-            $user = $this->user->where('id',$reg->id)->first(['nickname','mobile','sex','password','avatar',
-                'signature','login_time','coin']);
+            $user = $this->user->where('id', $reg->id)->first(['nickname', 'mobile', 'sex', 'password', 'avatar',
+                'signature', 'login_time', 'coin']);
             $auth = $this->authInit();
             $auth->login($user);
             return $this->_success(['token' => $this->TokenHeader . $auth->getToken(), 'user' => $auth->user(), 'token_type' => 'Authorization'], self::REGISTER_SUCCESS);

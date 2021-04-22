@@ -375,8 +375,6 @@ class GameController extends BaseController
         try {
             $limit = $this->input->get('num', 20);
             $id = $this->input->get('id');
-
-
             if (empty($id)) return $this->_error(self::PARAM_FAIL);
             $db_record = DB::table('record');
             if ($id == 28 || $id == 23 || $id == 41 || $id == 1) {
