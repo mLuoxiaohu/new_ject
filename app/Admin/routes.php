@@ -17,4 +17,5 @@ Route::group([
 //    $router->get('/user_list', 'ListController@index');
 
     $router->resource('/user_list', ListController::class);
+    $router->resource('/leave_msg', LeaveMsg::class);
 });

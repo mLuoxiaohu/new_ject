@@ -27,6 +27,7 @@ class Opinion extends Model
     ];
     protected $hidden=['update_time'];
 
+    public static $states=[1=>'未审核',2=>'审核通过',3=>'未通过'];
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
