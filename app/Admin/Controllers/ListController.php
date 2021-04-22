@@ -39,9 +39,11 @@ class ListController extends AdminController
         $grid->column('avatar','头像')->display(function ($avatar){
           return "<img src='{$avatar}' width='80' height='80'>";
         });
-        $grid->column('state','状态')->display(function ($state){
-            return $state == 1?'正常': '禁用';
-        });
+        $states = [
+            'on'  => ['value' => 1, 'text' => '正常', 'color' => 'primary'],
+            'off' => ['value' => 2, 'text' => '禁止', 'color' => 'default'],
+        ];
+        $grid->column('state', '状态')->switch($states);
         $grid->column('login_ip','登录IP');
         $grid->column('login_time','登录时间');
         $grid->column('create_time',trans('admin.created_at'));
