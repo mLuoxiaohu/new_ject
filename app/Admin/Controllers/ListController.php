@@ -8,7 +8,6 @@ use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
-use phpDocumentor\Reflection\DocBlock\Tags\Uses;
 
 class ListController extends AdminController
 {
@@ -16,6 +15,11 @@ class ListController extends AdminController
     public function __construct(User $user)
     {
      $this->user=$user;
+    }
+
+    protected function title()
+    {
+        return '用户列表';
     }
 
 //'nickname','mobile','sex','password','avatar','state','create_time',
@@ -75,17 +79,13 @@ class ListController extends AdminController
     {
         $form = new Form(new User);
         $form->text('nickname','用户昵称');
-        $form->number('mobile','用户手机号');
-        $form->select('sex', '性别')->options([
-            1 => '未知',
-            2 => '男',
-            3 => '女' ,
-        ]);
+        $form->text('mobile','用户手机号');
         $form->select('state', '状态')->options([
             1 => '正常',
             2 => '禁用',
         ]);
-        $form->file('avatar','头像');
+//        $form->file('avatar','头像');
+        $form->image('avatar','头像')->removable()->uniqueName();
         return $form;
     }
 }
