@@ -60,7 +60,7 @@ class LeaveMsg extends AdminController
         $form->text('nickname','用户昵称');
         $form->text('mobile','用户手机号');
         $form->select('state', '状态')->options([
-            1=>'未审核',2=>'审核通过',3=>'未通过'
+            2=>'审核通过',3=>'未通过'
         ]);
         $form->textarea('content','评论内容');
         $form->image('avatar','头像')->removable()->uniqueName();
