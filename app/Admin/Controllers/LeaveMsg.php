@@ -34,7 +34,7 @@ class LeaveMsg extends AdminController
             '2'  => ['value' => '2', 'text' => '通过', 'color' => 'primary'],
             '3' => ['value' => '3', 'text' => '不通过', 'color' => 'default'],
         ];
-        $grid->column('state', '审核状态')->switch($states));
+        $grid->column('state', '审核状态')->switch($states);
         $grid->column('create_time',trans('admin.created_at'));
         $grid->column('update_time',trans('admin.updated_at'));
         $grid->filter(function($filter){
