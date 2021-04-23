@@ -34,9 +34,7 @@ class LeaveMsg extends AdminController
             'on'  => ['value' => '2', 'text' => '通过', 'color' => 'primary'],
             'off' => ['value' => '3', 'text' => '不通过', 'color' => 'default'],
         ];
-        $grid->column('state', '审核状态')->radio([
-            '2'=>'审核通过','3'=>'未通过'
-        ]);
+        $grid->column('state', '审核状态')->switch($states);
         $grid->column('create_time',trans('admin.created_at'));
         $grid->column('update_time',trans('admin.updated_at'));
         $grid->filter(function($filter){
@@ -57,9 +55,11 @@ class LeaveMsg extends AdminController
         $form = new Form(new Opinion());
         $form->text('nickname','用户昵称');
         $form->text('mobile','用户手机号');
-        $form->radio('state', [
-            '2'=>'审核通过','3'=>'未通过'
-        ]);
+        $states = [
+            'on'  => ['value' => '2', 'text' => '通过', 'color' => 'primary'],
+            'off' => ['value' => '3', 'text' => '不通过', 'color' => 'default'],
+        ];
+        $form->switch($states);
         $form->textarea('content','评论内容');
         $form->image('avatar','头像')->removable()->uniqueName();
         return $form;
