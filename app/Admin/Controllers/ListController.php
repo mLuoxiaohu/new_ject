@@ -56,7 +56,7 @@ class ListController extends AdminController
                 ''   => '所有',
                 1    => '正常',
                 2    => '禁用',
-            ]);;
+            ]);
         });
         return $grid;
     }

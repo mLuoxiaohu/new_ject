@@ -54,7 +54,6 @@ class LeaveMsg extends AdminController
     {
         $form = new Form(new Opinion());
         $form->text('nickname','用户昵称');
-        $form->text('mobile','用户手机号');
         $states = [
             'on'  => ['value' => '2', 'text' => '通过', 'color' => 'primary'],
             'off' => ['value' => '3', 'text' => '不通过', 'color' => 'default'],
