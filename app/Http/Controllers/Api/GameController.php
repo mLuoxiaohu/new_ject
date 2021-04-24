@@ -48,15 +48,24 @@ class GameController extends BaseController
         return $this->auth->guard($this->prefix);
     }
 
-
+    /**
+     * @desc 下期开奖内容
+     * @route /next_open_content
+     * @param id 彩种id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function next_open_content(Yc $yc,Cole $cole){
         try{
           $id = $this->input->get('id');
            $type_id= $cole->where('kid',$id)->pluck('id');
-         $result= $yc->where(['kid'=>$id,'state'=>1])->whereIn('type',$type_id)
+         $result= $yc->where(['kid'=>$id,'state'=>1])->with('cole')->whereIn('type',$type_id)
              ->orderBy('qi_start','desc')
              ->orderBy('type','asc')
-             ->limit(count($type_id))->get();
+             ->limit(count($type_id))->get(['id','kid','qi_start','qi_end','value','bonus','type','state']);
+         if($result){
+             foreach ($result as $key=>&$v) $v->value=explode(',',$v->value);
+         }
+
          return $this->_success($result);
         }catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
