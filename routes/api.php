@@ -88,6 +88,8 @@ Route::get('game_live_all', "GameController@gatLiveAllGame");
 Route::get('game_lh_special', "GameController@lhcSpecial");
 #香港澳门新加坡开奖
 Route::get('game_open_other', "GameController@gameOpenOther");
+#下期开奖计划
+Route::get('next_open_content', "GameController@next_open_content");
 #GET
 Route::get('game_ttl', "IndexController@bonus");
 Route::group([

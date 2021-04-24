@@ -49,6 +49,21 @@ class GameController extends BaseController
     }
 
 
+    public function next_open_content(Yc $yc,Cole $cole){
+        try{
+          $id = $this->input->get('id');
+           $type_id= $cole->where('kid',$id)->pluck('id');
+         $result= $yc->where(['kid'=>$id,'state'=>1])->whereIn('type',$type_id)
+             ->orderBy('qi_start','desc')
+             ->orderBy('type','asc')
+             ->limit(count($type_id))->get();
+         return $this->_success($result);
+        }catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+    }
+
+
     /**
      * @desc 我的收藏
      * @route get
