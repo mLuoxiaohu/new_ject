@@ -14,8 +14,8 @@ Route::group([
 ], function (Router $router) {
 
     $router->get('/', 'HomeController@index')->name('home');
-//    $router->get('/user_list', 'ListController@index');
-
     $router->resource('/user_list', ListController::class);
     $router->resource('/leave_msg', LeaveMsg::class);
+    $router->resource('/lottery_list', Lottery::class);
+    $router->resource('/lottery_record', OpenLottery::class);
 });

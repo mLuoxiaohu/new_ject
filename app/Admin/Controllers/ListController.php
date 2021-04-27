@@ -8,6 +8,7 @@ use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
+use Illuminate\Support\Facades\Hash;
 
 class ListController extends AdminController
 {
@@ -82,12 +83,19 @@ class ListController extends AdminController
         $form = new Form(new User);
         $form->text('nickname','用户昵称');
         $form->text('mobile','用户手机号');
+        $form->password('password','用户密码');
+        $form->saving(function (Form $form) {
+            if ($form->password) {
+                $form->password = Hash::make($form->password);
+            }else{
+                unset($form->password);
+            }
+        });
         $states = [
             'on'  => ['value' => '1', 'text' => '正常', 'color' => 'primary'],
             'off' => ['value' => '2', 'text' => '禁止', 'color' => 'default'],
         ];
         $form->switch('state', '状态')->states($states);
-//        $form->file('avatar','头像');
         $form->image('avatar','头像')->removable()->uniqueName();
         return $form;
     }

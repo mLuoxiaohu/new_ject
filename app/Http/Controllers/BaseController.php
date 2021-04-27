@@ -71,7 +71,7 @@ class BaseController extends Controller
     const DELETE_SUCCESS = '删除成功';
     const DELETE_FAILED = '删除失败';
     const DELETE_DATA_NOT_NULL = '要删除的数据不存在或已删除';
-    const DATA_NULL = '没有查找到数此数据';
+    const DATA_NULL = '无数据';
     const COLLECTION_STORE_FAIL = '该彩种已收藏,请勿重复收藏';
     const STORE_CANCEL = '取消收藏成功';
     const COLLECTION_STORE_SUCCESS = '收藏成功';

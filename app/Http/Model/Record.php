@@ -10,4 +10,9 @@ class Record extends Model
 {
     protected $table='record';
 
+
+    public function kind()
+    {
+        return $this->hasOne(Kind::class,'id','kid');
+    }
 }

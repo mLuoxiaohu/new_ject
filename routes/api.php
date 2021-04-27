@@ -91,7 +91,7 @@ Route::get('game_open_other', "GameController@gameOpenOther");
 #下期开奖计划
 Route::get('next_open_content', "GameController@next_open_content");
 #GET
-Route::get('game_ttl', "IndexController@bonus");
+Route::get('get_count_data', "GameController@getCountData");
 Route::group([
     'middleware' => 'auth:api'
 ], function () {

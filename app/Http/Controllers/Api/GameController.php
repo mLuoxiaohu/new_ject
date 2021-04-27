@@ -8,7 +8,6 @@ use App\Http\Controllers\BaseController;
 use App\Http\Model\Cate;
 use App\Http\Model\Cole;
 use App\Http\Model\Kind;
-use App\Http\Model\Opinion;
 use App\Http\Model\Plan;
 use App\Http\Model\Record;
 use App\Http\Model\Store;
@@ -17,6 +16,7 @@ use App\Http\Model\Yc;
 use Illuminate\Contracts\Auth\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use SebastianBergmann\CodeCoverage\Report\PHP;
 use Tymon\JWTAuth\Contracts\Providers\JWT;
 
 class GameController extends BaseController
@@ -48,26 +48,126 @@ class GameController extends BaseController
         return $this->auth->guard($this->prefix);
     }
 
+
+    /**
+     * 长龙数据
+     * @route /get_count_data
+     * @method get
+     * @param id 彩种id
+     * @return \Illuminate\Http\JsonResponse|void
+     */
+    public function getCountData()
+    {
+        try {
+            $id = $this->input->get('id', null);
+            if (empty($id)) return $this->_error(self::REQUEST_ERROR);
+            $list = $this->open->where('kid', $id)->limit(50)->orderBy('periods', 'desc')->orderBy('id', 'desc')->get(['number', 'kid']);
+            $init = $this->open->where('kid', $id)->orderBy('periods', 'desc')->orderBy('id', 'desc')->first(['number', 'kid']);
+            if (!$init) return $this->_success([], self::DATA_NULL);
+            $ex1 = explode(',', $init->number);
+            $data = $this->initData($init->kid, $ex1);
+//            return $this->_success($data);
+            if ($list) {
+                foreach ($list as $kk => &$vv) {
+                    $ex = explode(',', $vv->number);
+                    for ($i = 0; $i < count($ex); $i++) {
+                        if ($data[$i]['ds_set'] >= 1 && $data[$i]['dx_set'] >= 1 && (count($list) - 1) != $kk) continue;
+                        $dx = '小';
+                        if (in_array($vv->kid, [18, 37, 38, 40])) {
+                            if ((int)$ex[$i] > 24) $dx = '大';
+                        } else {
+                            if ((int)$ex[$i] > 4) $dx = '大';
+                        }
+                        if ($data[$i]['dx_type'] == $dx && $data[$i]['dx_set'] == 0) {
+                            $data[$i]['dx'] += 1;
+                        } else {
+                            $data[$i]['dx_set'] = 1;
+                        }
+                        $ds = '单';
+                        if (((int)$ex[$i] % 2) == 0) $ds = '双';
+                        if ($data[$i]['ds_type'] == $ds && $data[$i]['ds_set'] == 0) {
+                            $data[$i]['ds'] += 1;
+                        } else {
+                            $data[$i]['ds_set'] = 1;
+                        }
+                        if ((count($list) - 1) == $kk) {
+                            unset($data[$i]['ds_set'], $data[$i]['dx_set']);
+                        }
+                    }
+                }
+
+
+            }
+            return $this->_success($data);
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
+    }
+    # 14 15 39 16 28 十码
+    # 18 37 38 40
+    private function initData($kid, $first)
+    {
+        $init = [];
+//        var_dump($first);
+        for ($i = 0; $i < count($first); $i++) {
+            $ds = '单';
+            if (((int)$first[$i] % 2) == 0) $ds = '双';
+            $num = ($i + 1);
+            $str = $num < 10 ? '0' . $num : $num;
+            $name = '';
+            $dx = '小';
+            switch ($kid) {
+                case 14:
+                case 15:
+                case 39:
+                case 16:
+                case 28:
+                case 30:
+                    if ($i == 0) $name = '冠军';
+                    if ($i == 1) $name = '亚军';
+                    if ((int)$first[$i] > 4) $dx = '大';
+                    break;
+                case 18:
+                case 37:
+                case 38:
+                case 40:
+                    if ($i == 6) {
+                        $name = '特码';
+                    } else {
+                        $name = "第{$str}球";
+                    }
+                    if ((int)$first[$i] > 24) $dx = '大';
+                    break;
+                default:
+                    $name = "第{$str}球";
+                    if ((int)$first[$i] > 4) $dx = '大';
+            }
+            array_push($init, ['ds' => 0, 'dx' => 0, 'dx_set' => 0, 'ds_set' => 0, 'dx_type' => $dx, 'ds_type' => $ds, 'name' => $name]);
+        }
+        return $init;
+    }
+
     /**
      * @desc 下期开奖内容
      * @route /next_open_content
      * @param id 彩种id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function next_open_content(Yc $yc,Cole $cole){
-        try{
-          $id = $this->input->get('id');
-           $type_id= $cole->where('kid',$id)->pluck('id');
-         $result= $yc->where(['kid'=>$id,'state'=>1])->with('cole')->whereIn('type',$type_id)
-             ->orderBy('qi_start','desc')
-             ->orderBy('type','asc')
-             ->limit(count($type_id))->get(['id','kid','qi_start','qi_end','value','bonus','type','state']);
-         if($result){
-             foreach ($result as $key=>&$v) $v->value=explode(',',$v->value);
-         }
+    public function next_open_content(Yc $yc, Cole $cole)
+    {
+        try {
+            $id = $this->input->get('id');
+            $type_id = $cole->where('kid', $id)->pluck('id');
+            $result = $yc->where(['kid' => $id, 'state' => 1])->with('cole')->whereIn('type', $type_id)
+                ->orderBy('qi_start', 'desc')
+                ->orderBy('type', 'asc')
+                ->limit(count($type_id))->get(['id', 'kid', 'qi_start', 'qi_end', 'value', 'bonus', 'type', 'state']);
+            if ($result) {
+                foreach ($result as $key => &$v) $v->value = explode(',', $v->value);
+            }
 
-         return $this->_success($result);
-        }catch (\Exception $ex) {
+            return $this->_success($result);
+        } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
         }
     }
@@ -80,13 +180,14 @@ class GameController extends BaseController
      * @param Store $store
      * @return \Illuminate\Http\JsonResponse
      */
-    public function game_store_list(Store $store){
-        try{
-            $list= $store->where('uid',$this->authInit()->id())->pluck('lottery_id');
-            $rows = $this->kind->where(['none' => 0])->whereIn('id',$list)
+    public function game_store_list(Store $store)
+    {
+        try {
+            $list = $store->where('uid', $this->authInit()->id())->pluck('lottery_id');
+            $rows = $this->kind->where(['none' => 0])->whereIn('id', $list)
                 ->orderBy('sort', 'asc')
                 ->get(['id', 'name', 'icon', 'date', 'abbr', 'video']);
-            if(!$rows) return $this->_error(self::THE_LOTTERY_NULL);
+            if (!$rows) return $this->_error(self::THE_LOTTERY_NULL);
             foreach ($rows as $key => &$value) {
                 $arr = $this->open->where('kid', $value['id'])
                     ->orderBy('id', 'desc')
@@ -107,10 +208,10 @@ class GameController extends BaseController
                     $rows[$key]['down'] = $this->timeCal($arr, '', true);
                 }
             }
-                return $this->_success($rows);
-            } catch (\Exception $ex) {
-                return $this->_error($ex->getMessage());
-            }
+            return $this->_success($rows);
+        } catch (\Exception $ex) {
+            return $this->_error($ex->getMessage());
+        }
     }
 
     /**
@@ -120,11 +221,12 @@ class GameController extends BaseController
      * @param id 彩种id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function yucolle(Cole $cole){
-        try{
-           $id = $this->input->get('id');
+    public function yucolle(Cole $cole)
+    {
+        try {
+            $id = $this->input->get('id');
             if (empty($id)) return $this->_error(self::PARAM_FAIL);
-            $list=$cole->where('kid',$id)->get(['id','name']);
+            $list = $cole->where('kid', $id)->get(['id', 'name']);
             if ($list) return $this->_success($list);
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
@@ -137,16 +239,17 @@ class GameController extends BaseController
      * @route /game_yc_list
      * @param num 显示条数
      * @param id 彩种id
-     * @param  type 预测类型id
+     * @param type 预测类型id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function prediction(Yc $yc){
+    public function prediction(Yc $yc)
+    {
         try {
             $limit = $this->input->get('num', 20);
             $id = $this->input->get('id');
-            $type=$this->input->get('type');
+            $type = $this->input->get('type');
             if (empty($id) || empty($type)) return $this->_error(self::PARAM_FAIL);
-            $list=$yc->where(['kid'=>$id,'type'=>$type])->with('cole')->limit($limit)->get(['type','qi_start','qi_end','value','bonus','state']);
+            $list = $yc->where(['kid' => $id, 'type' => $type])->with('cole')->limit($limit)->get(['type', 'qi_start', 'qi_end', 'value', 'bonus', 'state']);
             if ($list) return $this->_success($list);
             return $this->_error();
             return $this->_error();
@@ -246,7 +349,7 @@ class GameController extends BaseController
                 ->orderBy('time', 'desc')
                 ->first(['periods', 'number', 'time', 'next_time']);
             $row['periods'] = $arr['periods'];
-            $row['number'] = explode(",",$arr['number']);
+            $row['number'] = explode(",", $arr['number']);
             if (empty($row) || empty($arr)) return $this->_error(self::DATA_NULL);
             if (true) {
                 $type = explode("/", $row['date']);
@@ -422,44 +525,43 @@ class GameController extends BaseController
     }
 
 
-
     /**
      * @desc  获取澳门,新加坡,香港开奖
      * @route /game_open_other
      * @method get
-     * @param  num 每页多少条 default 20
-     * @param  id 彩种id 18香港,37新加坡，38澳门，40台湾
+     * @param num 每页多少条 default 20
+     * @param id 彩种id 18香港,37新加坡，38澳门，40台湾
      */
-    public function gameOpenOther(){
+    public function gameOpenOther()
+    {
         //获取参数
-        try{
-        $limit = $this->input->get('num', 20);
-        $id = $this->input->get('id');
-        if(empty($id) || empty($limit)) return $this->_error(self::PARAM_FAIL);
+        try {
+            $limit = $this->input->get('num', 20);
+            $id = $this->input->get('id');
+            if (empty($id) || empty($limit)) return $this->_error(self::PARAM_FAIL);
 
-        if(!in_array($id,$this->kind->other)) return $this->_error(self::PARAM_NOT_EXISTS);
-        $info = $this->open->where(array('kid'=>$id))
-            ->orderBy('periods', 'desc')
-            ->limit($limit)->get(['periods','number','adds','time','next_time'])->toArray();
-        foreach($info as $k => &$v) {
-           $ex=explode('|',$v['adds']);
-           $v=array(
-                'periods'=>$v['periods'],
-                'wx'=>explode(",",$ex[1]),
-                'sx'=>explode(",",$ex[0]),
-                'color'=>explode(",",$ex[2]),
-                'number'=> explode(',', $v['number']),
-                'next_time'=>date('Y-m-d H:i:s',$v['next_time']),
-                'time'=>date('Y-m-d H:i:s',$v['time']),
-            );
-        }
+            if (!in_array($id, $this->kind->other)) return $this->_error(self::PARAM_NOT_EXISTS);
+            $info = $this->open->where(array('kid' => $id))
+                ->orderBy('periods', 'desc')
+                ->limit($limit)->get(['periods', 'number', 'adds', 'time', 'next_time'])->toArray();
+            foreach ($info as $k => &$v) {
+                $ex = explode('|', $v['adds']);
+                $v = array(
+                    'periods' => $v['periods'],
+                    'wx' => explode(",", $ex[1]),
+                    'sx' => explode(",", $ex[0]),
+                    'color' => explode(",", $ex[2]),
+                    'number' => explode(',', $v['number']),
+                    'next_time' => date('Y-m-d H:i:s', $v['next_time']),
+                    'time' => date('Y-m-d H:i:s', $v['time']),
+                );
+            }
             if ($info) return $this->_success($info);
             return $this->_error();
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
         }
     }
-
 
 
     /**
@@ -554,7 +656,6 @@ class GameController extends BaseController
             return $this->_error($ex->getMessage());
         }
     }
-
 
 
     /**
