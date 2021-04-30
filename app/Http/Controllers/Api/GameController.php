@@ -66,7 +66,6 @@ class GameController extends BaseController
             if (!$init) return $this->_success([], self::DATA_NULL);
             $ex1 = explode(',', $init->number);
             $data = $this->initData($init->kid, $ex1);
-//            return $this->_success($data);
             if ($list) {
                 foreach ($list as $kk => &$vv) {
                     $ex = explode(',', $vv->number);
@@ -95,7 +94,6 @@ class GameController extends BaseController
                         }
                     }
                 }
-
 
             }
             return $this->_success($data);

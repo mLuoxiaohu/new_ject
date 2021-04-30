@@ -18,4 +18,5 @@ Route::group([
     $router->resource('/leave_msg', LeaveMsg::class);
     $router->resource('/lottery_list', Lottery::class);
     $router->resource('/lottery_record', OpenLottery::class);
+    $router->resource('/lottery_rule', RuleController::class);
 });

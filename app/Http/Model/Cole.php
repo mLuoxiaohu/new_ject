@@ -15,4 +15,8 @@ class Cole extends Model
 {
     protected $table='cole';
 
+
+    public function kind(){
+        return $this->hasOne(Kind::class,'id','kid');
+    }
 }

@@ -4,12 +4,12 @@
 namespace App\Admin\Controllers;
 use App\Http\Model\Kind;
 use App\Http\Model\User;
-use Carbon\Carbon;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
-use Encore\Admin\Show;
 use App\Http\Model\Record;
+use Illuminate\Database\Eloquent\Model;
+
 class OpenLottery extends AdminController
 {
 
@@ -26,7 +26,7 @@ class OpenLottery extends AdminController
 
 
 
-        $grid = new Grid(new Record());
+        $grid = new Grid(new Record);
 
         $grid->column('id', 'ID')->sortable();
         $grid->column('kind.name','彩种名称');
@@ -44,9 +44,7 @@ class OpenLottery extends AdminController
         $grid->filter(function($filter){
             // 去掉默认的id过滤器
             $filter->disableIdFilter();
-            $lot=(new Kind())->pluck('name','id')->toArray();
-//            $new=[''=>'所有'];
-//            array_unshift($lot,$new);
+            $lot=(new Kind())->pluck('name','id');
             // 在这里添加字段过滤器
             $filter->like('kid', '彩种')->radio($lot);
         });
@@ -55,7 +53,7 @@ class OpenLottery extends AdminController
 
     protected function form()
     {
-        $form = new Form(new User);
+        $form = new Form(new Record);
         $form->text('periods','开奖期号');
         $form->text('number','开奖号码');
         return $form;
