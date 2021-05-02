@@ -11,7 +11,7 @@ use Encore\Admin\Grid;
 use Encore\Admin\Show;
 use Encore\Admin\Widgets\Table;
 
-class LeaveMsg extends AdminController
+class LeaveMsgController extends AdminController
 {
     protected function title()
     {

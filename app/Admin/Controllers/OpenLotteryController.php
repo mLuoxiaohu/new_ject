@@ -3,14 +3,13 @@
 
 namespace App\Admin\Controllers;
 use App\Http\Model\Kind;
-use App\Http\Model\User;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use App\Http\Model\Record;
-use Illuminate\Database\Eloquent\Model;
 
-class OpenLottery extends AdminController
+
+class OpenLotteryController extends AdminController
 {
 
 
@@ -23,9 +22,6 @@ class OpenLottery extends AdminController
      * @return Grid
      */
     protected function grid(){
-
-
-
         $grid = new Grid(new Record);
 
         $grid->column('id', 'ID')->sortable();

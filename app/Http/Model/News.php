@@ -21,5 +21,9 @@ class News extends Model
         return date('Y-m-d H:i:s',$this->attributes['time']);
     }
 
+    public function newclass(){
+        return $this->hasOne(NewsClass::class,'id','nid');
+    }
+
 
 }

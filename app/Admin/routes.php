@@ -15,8 +15,10 @@ Route::group([
 
     $router->get('/', 'HomeController@index')->name('home');
     $router->resource('/user_list', ListController::class);
-    $router->resource('/leave_msg', LeaveMsg::class);
-    $router->resource('/lottery_list', Lottery::class);
-    $router->resource('/lottery_record', OpenLottery::class);
+    $router->resource('/leave_msg', LeaveMsgController::class);
+    $router->resource('/lottery_list', LotteryController::class);
+    $router->resource('/lottery_record', OpenLotteryController::class);
     $router->resource('/lottery_rule', RuleController::class);
+//    轮播
+    $router->resource('/user_slide', SlideListController::class);
 });

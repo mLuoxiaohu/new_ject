@@ -537,7 +537,8 @@ class UserController extends BaseController
             }
             if (!$code) {
                 $code = rand(1000, 9999);
-                if ($id) {
+                if($id) {
+                    Cache::add($mobile, $code, 60); //60
                     Cache::add($mobile . $id, $code, 240); //60
                 } else {
                     Cache::add($mobile, $code, 60); //60
