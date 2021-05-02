@@ -39,7 +39,7 @@ class Opinion extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function children(){
-        return $this->hasMany(self::class,'pid','id')->select('avatar','pid','content','nickname','create_time');
+        return $this->hasMany(self::class,'pid','id')->select('id','pid','content','nickname','create_time');
     }
 
     /**
