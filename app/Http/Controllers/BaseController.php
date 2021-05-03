@@ -37,6 +37,7 @@ class BaseController extends Controller
     const INVITE_CODE_ERROR = '邀请码错误';
     const CODE_ERROR = '验证码错误';
     const MOBILE_EXISTS = '该手机已注册';
+    const MOBILE_NEW_SAME = '新手机号不能与旧手机号一致';
     const PROHIBIT_LOGIN = '账号已禁用,请联系客服处理';
     const NOT_CHANGE_CONTENT = '没有需要修改内容';
     const INPUT_CODE = '请输入验证码';

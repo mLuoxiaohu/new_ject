@@ -367,6 +367,8 @@ class UserController extends BaseController
      */
     public function userUpdate(Request $request)
     {
+
+
         try {
 
             $param = [
@@ -402,6 +404,7 @@ class UserController extends BaseController
             if (count($input) <= 0) return $this->_error(self::NOT_CHANGE_CONTENT);
             #手机修改
             if (isset($input['mobile'])) {
+                if($input['mobile'] == $auth->user()->mobile) return $this->_error(self::MOBILE_NEW_SAME);
                 if (Cache::get($id) == null || Cache::get($id) != 1) return $this->_error(self::OLD_MOBILE_EXPIRED);
                 $mobile = $input['mobile'];
                 $is_mobile = $this->user->where('id', '!=', $id)->where('mobile', $mobile)->value('id');
@@ -509,6 +512,7 @@ class UserController extends BaseController
      * @method GET
      * @route mobile_code
      * @param $mobile 手机号
+     * @param $type 可选  1 认证手机号码 认证手机号码需要加上token
      * @return msg
      */
     public function MobileCode(Request $input)
@@ -539,13 +543,13 @@ class UserController extends BaseController
             if (!$code) {
                 $code = rand(1000, 9999);
                 if($id && $type == 1) {
-                    Cache::add($mobile . $id, $code, 240); //60
+                    Cache::add($mobile . $id, $code, 60); //60
                 } else {
                     Cache::add($mobile, $code, 60); //60
                 }
             }
             if($type == 1){
-                $content = "【柒柒科技】您的正在修改手机号码，请注意不要随意透露验证码，本次严重码为：{$code} 有效期60秒请尽快使用。";
+                $content = "【柒柒科技】您的正在修改手机号码，请注意不要随意透露验证码，本次验证码为：{$code} 有效期60秒请尽快使用。";
             }else{
                 $content = "【柒柒科技】您的验证码：{$code} 有效期60秒请尽快使用。";
             }
