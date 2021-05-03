@@ -63,7 +63,7 @@ Route::get('news_list', "IndexController@newsList");
 #更多新闻
 Route::get('news_more', "IndexController@newsMore");
 #新闻类型
-Route::get('news_type', "IndexController@newsMore");
+Route::get('news_type', "IndexController@newsType");
 #开奖类型
 Route::get('game_type', "GameController@game_type");
 #开奖列表
