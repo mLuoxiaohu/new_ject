@@ -100,7 +100,7 @@ class IndexController extends BaseController
         try {
             $news_list = $news->orderBy('time', 'desc')
                 ->limit(10)
-                ->get(['title', 'time', 'id']);
+                ->get(['title', 'time', 'id','content']);
             return $this->_success($news_list);
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());

@@ -21,4 +21,5 @@ Route::group([
     $router->resource('/lottery_rule', RuleController::class);
 //    轮播
     $router->resource('/user_slide', SlideListController::class);
+    $router->resource('/user_news', NewsListController::class);
 });

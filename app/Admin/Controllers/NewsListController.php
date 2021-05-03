@@ -6,7 +6,7 @@ use App\Http\Model\News;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Controllers\AdminController;
-use Illuminate\Database\Eloquent\Model;
+
 
 class NewsListController extends AdminController
 {
@@ -24,16 +24,13 @@ class NewsListController extends AdminController
         $grid = new Grid(new News());
         $grid->model()->orderBy('id','desc');
         $grid->column('id','ID')->sortable();
-        $grid->column('cover', '图片地址')->display(function ($avatar){
+        $grid->column('newclass.name','分类名称');
+        $grid->column('title','标题');
+        $grid->column('icon', '图片')->display(function ($avatar){
             return "<img src='{$avatar}' width='80' height='80'>";
         });
-        $grid->column('url', '跳转链接')->editable('text');
-        // 设置text、color、和存储值
-        $states = [
-            'on'  => ['value' => '1', 'text' => '展示', 'color' => 'primary'],
-            'off' => ['value' => '2', 'text' => '隐藏', 'color' => 'default'],
-        ];
-        $grid->column('state', '展示状态')->switch($states);
+        $grid->column('content', '内容')->limit(30);
+        $grid->column('time',"创建时间");
         $grid->actions(function (Grid\Displayers\Actions $actions){
             #去掉显示按钮
             $actions->disableView();

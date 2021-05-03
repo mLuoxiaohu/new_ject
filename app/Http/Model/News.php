@@ -25,5 +25,8 @@ class News extends Model
         return $this->hasOne(NewsClass::class,'id','nid');
     }
 
+    public function getIconAttribute(){
+        return   BaseController::isUrlHeader($this->attributes['icon']) ? $this->attributes['icon'] :  (BaseController::is_https() ? 'https://':'http://').($_SERVER["HTTP_HOST"] ?? $_SERVER['SERVER_ADDR'] ).'/user/'. $this->attributes['icon'];
+    }
 
 }
