@@ -121,9 +121,10 @@ class IndexController extends BaseController
     {
         try {
             $type = $request->get('type_id', '');
-            if (!empty($type)) $news->where('nid', $type);
+            $userSql = $news->newQuery();
+            if (!empty($type)) $userSql->where('nid', $type);
             $num = $request->get('num', 10);
-            $result = $news->orderBy('time', 'desc')
+            $result = $userSql->orderBy('time', 'desc')
                 ->paginate($num, ['title', 'time', 'id', 'content', 'nid']);
             return $this->_success($result);
         } catch (\Exception $ex) {

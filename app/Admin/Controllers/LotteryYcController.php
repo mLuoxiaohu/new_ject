@@ -38,15 +38,19 @@ class LotteryYcController extends AdminController
 //  `state` enum('1','2','3') NOT NULL DEFAULT '1' COMMENT '1 待开奖 2中奖 3未中将',
 //  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
         $grid = new Grid(new Yc());
-        $grid->model()->orderBy('kid', 'desc');
         $grid->model()->orderBy('id', 'desc');
+        $grid->model()->orderBy('kid', 'desc');
+        $grid->model()->orderBy('qi_start', 'desc');
+        $grid->model()->orderBy('type', 'asc');
         $grid->column('id', 'ID')->sortable();
         $grid->column('cole.name', '预测名称名称');
+        $grid->column('kind.name', '预测彩种');
         $grid->column('qi_start', '起始期数');
         $grid->column('qi_end', '结束期数');
-        $grid->column('value', '预测内容')->label();
-        $grid->column('bonus', '中奖内容')->label();
-        $grid->column('state', '中奖状态')->label();
+        //设置颜色，默认`success`,可选`danger`、`warning`、`info`、`primary`、`default`、`success`
+        $grid->column('value', '预测内容')->label('danger');
+        $grid->column('bonus', '中奖内容')->label('primary');
+        $grid->column('state', '中奖状态')->label('warning');
         $grid->column('time', "创建时间");
         $grid->actions(function (Grid\Displayers\Actions $actions) {
             #去掉显示按钮
@@ -57,9 +61,9 @@ class LotteryYcController extends AdminController
             $filter->disableIdFilter();
             // 在这里添加字段过滤器
             $filter->like('state', '开奖状态')->radio([
-                '待开奖' => '1',
-                '中奖' => '2',
-                '未中奖' => '3'
+                '1'=>'待开奖',
+                '2'=>'中奖',
+                '3'=>'未中奖'
             ]);
 
             $lot=(new Kind())->pluck('name','id');

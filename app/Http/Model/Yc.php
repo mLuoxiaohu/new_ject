@@ -4,6 +4,7 @@
 namespace App\Http\Model;
 
 
+use Couchbase\MutationToken;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -24,5 +25,8 @@ class Yc extends Model
 
     public function cole(){
         return $this->hasOne(Cole::class,'id','type')->select('id','name');
+    }
+    public function kind(){
+        return $this->hasOne(Kind::class,'id','kid')->select('id','name');
     }
 }
