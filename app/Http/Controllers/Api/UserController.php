@@ -64,8 +64,8 @@ class UserController extends BaseController
             $result = $store->where(['lottery_id' => $id, 'uid' => $this->authInit()->id()])->first();
             if ($result) return $this->_error(self::COLLECTION_STORE_FAIL);
             $is_success = $store->create(['lottery_id' => $id, 'uid' => $this->authInit()->id()]);
-            if ($is_success) return $this->_success();
-            return $this->_error(self::COLLECTION_STORE_SUCCESS);
+            if ($is_success) return $this->_success([],self::COLLECTION_STORE_SUCCESS);
+            return $this->_error();
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
         }
