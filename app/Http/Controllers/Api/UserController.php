@@ -84,10 +84,10 @@ class UserController extends BaseController
         try {
             $id = $request->get('id');
             $result = $store->where(['lottery_id' => $id, 'uid' => $this->authInit()->id()])->first();
-            if (!$result) return $this->_error(self::DATA_NULL);
+            if (!$result) return $this->_error(self::COLLECTION_STORE_NULL);
             $is_success = $result->delete();
-            if ($is_success) return $this->_success();
-            return $this->_error(self::STORE_CANCEL);
+            if ($is_success) return $this->_success(self::STORE_CANCEL);
+            return $this->_error();
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
         }
