@@ -191,17 +191,15 @@ class GameController extends BaseController
                     ->orderBy('id', 'desc')
                     ->first(['kid', 'periods', 'number', 'time', 'next_time', 'adds']);
                 $rows[$key]['periods'] = $arr['periods'];
-                $rows[$key]['number'] = $arr['number'];
+                $rows[$key]['number'] = explode(',',$arr['number']);
                 if (in_array($arr['kid'], [18, 37, 38, 40])) {
                     $sxNumber = $this->getLhcOpenInfo($arr['adds']);
                 } else {
                     $sxNumber = $this->getLhcTime($arr['number']);
                 }
-
                 $rows[$key]['sxlist'] = $sxNumber['sxNumber'];
                 $type = explode("/", $value['date']);
                 $rows[$key]['down'] = $this->timeCal($arr, $type);
-
                 if ($rows[$key]['abbr'] == 'xjp' || $rows[$key]['abbr'] == 'amlhc' || $rows[$key]['abbr'] == 'hk6' || $rows[$key]['abbr'] == 'twlh') {
                     $rows[$key]['down'] = $this->timeCal($arr, '', true);
                 }
@@ -334,7 +332,7 @@ class GameController extends BaseController
      * @route /game_open_ones
      * @return \Illuminate\Http\JsonResponse
      */
-    public function againTime()
+    public function againTime(Store $store)
     {
         try {
             $id = $this->input->get('id');
@@ -347,6 +345,12 @@ class GameController extends BaseController
                 ->orderBy('time', 'desc')
                 ->first(['periods', 'number', 'time', 'next_time']);
             $row['periods'] = $arr['periods'];
+            $user=$this->authInit()->id();
+            if($user){
+                $row['is_store']=false;
+                $result = $store->where(['lottery_id' => $id, 'uid' => $this->authInit()->id()])->first();
+                if($result) $row['is_store']=true;
+            }
             $row['number'] = explode(",", $arr['number']);
             if (empty($row) || empty($arr)) return $this->_error(self::DATA_NULL);
             if (true) {
