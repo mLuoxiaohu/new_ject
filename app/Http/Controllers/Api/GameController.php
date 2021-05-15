@@ -16,7 +16,6 @@ use App\Http\Model\Yc;
 use Illuminate\Contracts\Auth\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use SebastianBergmann\CodeCoverage\Report\PHP;
 use Tymon\JWTAuth\Contracts\Providers\JWT;
 
 class GameController extends BaseController
@@ -341,7 +340,7 @@ class GameController extends BaseController
                 ->orderBy('id', 'desc')
                 ->first(['name', 'icon', 'date', 'abbr', 'video']);
             $arr = $this->open->where('kid', $id)
-                ->orderBy('periods', 'desc')
+                ->orderBy('id', 'desc')
                 ->orderBy('time', 'desc')
                 ->first(['periods', 'number', 'time', 'next_time']);
             $row['periods'] = $arr['periods'];
