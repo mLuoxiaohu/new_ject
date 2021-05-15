@@ -351,7 +351,6 @@ class GameController extends BaseController
                 if($result) $row['is_store']=true;
             }
             $row['number'] = explode(",", $arr['number']);
-            $len=count($row['number']);
             if (empty($row) || empty($arr)) return $this->_error(self::DATA_NULL);
             if (true) {
                 $type = explode("/", $row['date']);
@@ -359,13 +358,8 @@ class GameController extends BaseController
                 if ($row['abbr'] == 'xjp' || $row['abbr'] == 'amlhc' || $row['abbr'] == 'hk6' || $row['abbr'] == 'bjkl8' || $row['abbr'] == 'twlh') {
                     $row['down'] = $this->timeCal($arr, '', true);
                 }
-                if($row['down']<=0) {
-                     $arrs=[];
-                    for ($i = 0; $i < $len;$i++){
-                        $arrs[$i]=0;
-                    }
-                    $row['number']=$arrs;
-                }
+                if($row['down']<=0) $row['number']='';
+
 
             } else {
                 $prev = date('d', $arr['time']);  // record 4
