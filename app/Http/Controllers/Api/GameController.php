@@ -364,7 +364,7 @@ class GameController extends BaseController
                     for ($i = 0; $i < $len;$i++){
                         $arrs[$i]=0;
                     }
-                    $row['number']=explode(",", $arrs['number']);
+                    $row['number']=$arrs;
                 }
 
             } else {
