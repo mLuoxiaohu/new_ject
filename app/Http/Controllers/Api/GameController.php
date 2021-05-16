@@ -404,7 +404,9 @@ class GameController extends BaseController
     public function cateGamesList(Cate $cate)
     {
         try {
-            $result = $cate->with('kind')->get();
+            $result = $cate->with(['kind'=>function($sql){
+                $sql->where('none',0);
+            }])->get();
             return $this->_success($result);
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
