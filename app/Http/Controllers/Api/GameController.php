@@ -247,7 +247,6 @@ class GameController extends BaseController
             $list = $yc->where(['kid' => $id, 'type' => $type])->with('cole')->limit($limit)->get(['type', 'qi_start', 'qi_end', 'value', 'bonus', 'state']);
             if ($list) return $this->_success($list);
             return $this->_error();
-            return $this->_error();
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
         }
@@ -322,6 +321,8 @@ class GameController extends BaseController
             return $this->_error($ex->getMessage());
         }
     }
+
+
 
 
     /**
@@ -770,8 +771,7 @@ class GameController extends BaseController
      * @param $type 类型 int
      * @param false $xjp 是否为新加坡 bool
      * @return false|int
-     */
-    private function timeCal($arr, $type, $xjp = false)
+     */private function timeCal1($arr, $type, $xjp = false)
     {
         if ($xjp) {
             // 单独计算新加坡彩
@@ -860,6 +860,104 @@ class GameController extends BaseController
                 if (($arr['time'] + $type[0]) > time()) {
                     $down = ($arr['time'] + $type[0]) - time() - 15;
                 } else {
+                    $down = 0;
+                }
+                break;
+        }
+        return $down;
+    }
+
+
+
+    //计算时间倒计时
+    private function timeCal($arr,$type, $xjp=false){
+        if ($xjp) {
+            // 单独计算新加坡彩
+            $nextTime = $arr['next_time'];
+            return $nextTime-time() > 0 ? $nextTime-time(): 0;
+        }
+        $count = count($type);
+        $new = time();
+        switch ($count) {
+            case 4:
+                //第一阶段时间范围
+                $jd1 = explode('-',$type[0]);
+                //第二阶段时间范围
+                $jd2 = explode('-',$type[1]);
+                //第一阶段时间戳
+                $jd1_start = strtotime(date('Y-m-d H:i:s',strtotime($jd1[0])));
+                $jd1_end = strtotime(date('Y-m-d H:i:s',strtotime($jd1[1])));
+                //第二阶段时间戳
+                $jd2_start = strtotime(date('Y-m-d H:i:s',strtotime($jd2[0])));
+                $jd2_end = strtotime(date('Y-m-d H:i:s',strtotime($jd2[1])));
+                //现在时间戳
+                if($new>=$jd1_start && $new<=$jd1_end){
+                    if(($arr['time']+$type[2])>time()){
+                        $down = ($arr['time']+$type[2])-time()-15;
+                    }else{
+                        $down = 0;
+                    }
+                }else if($new>$jd2_start){
+                    if(($arr['time']+$type[3])>time()){
+                        $down = ($arr['time']+$type[3])-time()-15;
+                    }else{
+                        $down = 0;
+                    }
+
+                }else if( $new<$jd2_end){
+                    if(($arr['time']+$type[3])>time()){
+                        $down = ($arr['time']+$type[3])-time()-15;
+                    }else{
+                        $down = 0;
+                    }
+
+                }else{
+                    //明天开始时间 - 今晚结束时间
+                    $down = $jd1_start - $new;
+
+                }
+                break;
+            case 2:
+                $jd1 = explode('-',$type[0]);
+                //第一阶段时间戳
+                $jd1_start = strtotime(date('Y-m-d H:i:s',strtotime($jd1[0])));
+                $jd1_end = strtotime(date('Y-m-d H:i:s',strtotime($jd1[1])));
+                if($jd1_end-$jd1_start>0){
+                    if($new>=$jd1_start && $new<=$jd1_end){
+                        if(($arr['time']+$type[1])>time()){
+                            $down = ($arr['time']+$type[1])-time()-15;
+                        }else{
+                            $down = 0;
+                        }
+                    }else{
+                        //用第二天的开始时间减去现在的时间 算出剩余开奖时间
+                        $next = strtotime('+1 day',strtotime(date('Y-m-d H:i:s',$jd1_start)));
+                        $down = $next - $new;
+                    }
+                }else{
+                    if($new>=$jd1_start){
+                        if(($arr['time']+$type[1])>time()){
+                            $down = ($arr['time']+$type[1])-time()-15;
+                        }else{
+                            $down = 0;
+                        }
+                    }else if($new<=$jd1_end){
+
+                        if(($arr['time']+$type[1])>time()){
+                            $down = ($arr['time']+$type[1])-time()-15;
+                        }else{
+                            $down = 0;
+                        }
+                    }else{
+                        $down = $jd1_start - $new;
+                    }
+                }
+
+                break;
+            case 1:
+                if(($arr['time']+$type[0])>time()){
+                    $down = ($arr['time']+$type[0])-time()-15;
+                }else{
                     $down = 0;
                 }
                 break;
