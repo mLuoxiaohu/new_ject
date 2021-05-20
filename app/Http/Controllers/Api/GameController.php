@@ -339,11 +339,11 @@ class GameController extends BaseController
             if (empty($id)) return $this->_error(self::PARAM_FAIL);
             $row = $this->kind->where('id', $id)
                 ->orderBy('id', 'desc')
-                ->first(['name', 'icon', 'date', 'abbr', 'video']);
+                ->first(['name', 'icon', 'date', 'abbr', 'video'])->toArray();
             $arr = $this->open->where('kid', $id)
                 ->orderBy('id', 'desc')
                 ->orderBy('time', 'desc')
-                ->first(['periods', 'number', 'time', 'next_time']);
+                ->first(['periods', 'number', 'time', 'next_time'])->toArray();
             $row['periods'] = $arr['periods'];
             $user=$this->authInit()->id();
             if($user){
@@ -360,8 +360,6 @@ class GameController extends BaseController
                     $row['down'] = $this->timeCal($arr, '', true);
                 }
                 if($row['down']<=0) $row['number']='';
-
-
             } else {
                 $prev = date('d', $arr['time']);  // record 4
                 $sxNumber = $this->getLhcTime($arr['number']); // record
@@ -771,8 +769,8 @@ class GameController extends BaseController
      * @param $type 类型 int
      * @param false $xjp 是否为新加坡 bool
      * @return false|int
-     */private function timeCal1($arr, $type, $xjp = false)
-    {
+     */
+    private function timeCal1($arr, $type, $xjp = false){
         if ($xjp) {
             // 单独计算新加坡彩
             $nextTime = $arr['next_time'];
