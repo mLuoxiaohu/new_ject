@@ -322,43 +322,6 @@ class GameController extends BaseController
         }
     }
 
-    public function againTime1(){
-        $id = I('param.id','','intval');
-        $db_record = D('Record');
-        $db_kind = D('Kind');
-        $row = $db_kind->field('name,icon,date,abbr,video')->where(array('id'=>$id))->order('id desc')->find();
-        $arr = $db_record->field("periods,number,time, next_time")->where(array('kid'=>$id))->order('periods desc')->order('time desc')->find();
-        $row['periods'] = $arr['periods'];
-        $row['number'] = $arr['number'];
-
-        if( 1== 1){  // $row['abbr'] != 'hk6'
-            $type = explode("/", $row['date']);
-            $row['down']= $this->timeCal($arr,$type);
-            if($row['abbr'] == 'xjp' || $row['abbr'] == 'amlhc' || $row['abbr'] == 'hk6'  || $row['abbr'] == 'bjkl8' || $row['abbr'] == 'twlh') {
-                $row['down'] = $this->timeCal($arr,'', true);
-            }
-        }else{
-//            print_r($row['abbr']);exit;
-            $prev = date('d',$arr['time']);  // record 4
-            $sxNumber = $this->getLhcTime($arr['number']); // record
-//            print_r($prev);exit;
-//            $prev = 2;
-            $row['sxlist'] = $sxNumber['sxNumber'];
-//            sxNumber['kj'] = 4;
-            if($sxNumber['kj'] == $prev){
-                $row['down'] = $sxNumber['down'];
-            }else{
-                $row['down'] = 0;
-            }
-        }
-        if($row){
-
-            $this->ajax(0,$row);
-        }else{
-            $this->ajax(1,array(),'未获取');
-        }
-    }
-
 
     /**
      * @desc 获取单个开奖记录
@@ -374,11 +337,12 @@ class GameController extends BaseController
             if (empty($id)) return $this->_error(self::PARAM_FAIL);
             $row = $this->kind->where('id', $id)
                 ->orderBy('id', 'desc')
-                ->first(['name', 'icon', 'date', 'abbr', 'video'])->toArray();
+                ->first(['name', 'icon', 'date', 'abbr', 'video']);
             $arr = $this->open->where('kid', $id)
                 ->orderBy('periods', 'desc')
                 ->orderBy('time', 'desc')
-                ->first(['periods', 'number', 'time', 'next_time'])->toArray();
+                ->first(['periods', 'number', 'time', 'next_time']);
+
             $row['periods'] = $arr['periods'];
             $user=$this->authInit()->id();
             if($user){
@@ -956,8 +920,8 @@ class GameController extends BaseController
                 //第一阶段时间戳
                 $jd1_start = strtotime(date('Y-m-d H:i:s',strtotime($jd1[0])));
                 $jd1_end = strtotime(date('Y-m-d H:i:s',strtotime($jd1[1])));
+
                 if($jd1_end-$jd1_start>0){
-                    echo 1;
                     if($new>=$jd1_start && $new<=$jd1_end){
                         if(($arr['time']+$type[1])>time()){
                             $down = ($arr['time']+$type[1])-time()-15;
@@ -970,7 +934,6 @@ class GameController extends BaseController
                         $down = $next - $new;
                     }
                 }else{
-                    echo 2;
                     if($new>=$jd1_start){
                         if(($arr['time']+$type[1])>time()){
                             $down = ($arr['time']+$type[1])-time()-15;
