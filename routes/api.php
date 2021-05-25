@@ -19,6 +19,9 @@ use Illuminate\Support\Facades\Route;
  * @methodType {get put post delete}
  * @routeMsg web
  */
+#测试
+Route::get('news_cntent', "NewsController@get_news_contents");
+
 #首页
 Route::get('index', "IndexController@index");
 #登陆

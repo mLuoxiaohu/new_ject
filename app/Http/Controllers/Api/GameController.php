@@ -770,7 +770,7 @@ class GameController extends BaseController
      * @param false $xjp 是否为新加坡 bool
      * @return false|int
      */
-    private function timeCal1($arr, $type, $xjp = false){
+    private function timeCal($arr, $type, $xjp = false){
         if ($xjp) {
             // 单独计算新加坡彩
             $nextTime = $arr['next_time'];
@@ -868,7 +868,7 @@ class GameController extends BaseController
 
 
     //计算时间倒计时
-    private function timeCal($arr,$type, $xjp=false){
+    private function timeCal1($arr,$type, $xjp=false){
         if ($xjp) {
             // 单独计算新加坡彩
             $nextTime = $arr['next_time'];
@@ -876,6 +876,7 @@ class GameController extends BaseController
         }
         $count = count($type);
         $new = time();
+
         switch ($count) {
             case 4:
                 //第一阶段时间范围
