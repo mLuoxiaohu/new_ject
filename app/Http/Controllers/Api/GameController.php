@@ -865,8 +865,6 @@ class GameController extends BaseController
         return $down;
     }
 
-
-
     //计算时间倒计时
     private function timeCal1($arr,$type, $xjp=false){
         if ($xjp) {
