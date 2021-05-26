@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel
 //         $schedule->command('inspire')
 //                  ->hourly();
 
-        $schedule->call(NewsController::get_news_contents())->daily();
+        $schedule->call(NewsController::get_news_contents())->everyThirtyMinutes();
     }
 
     /**
