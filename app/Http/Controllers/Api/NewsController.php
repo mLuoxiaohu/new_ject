@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Model\News;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -22,7 +23,7 @@ class NewsController extends BaseController
      * @param News $news
      * @return \Illuminate\Http\JsonResponse
      */
-    public function get_news_contents(News $news)
+    public static function get_news_contents()
     {
         #http://www.coindog.com/type/jinse/lives
         $accessKey = 'a15badd5fd7418f6ad49629792d4a51b';
@@ -57,7 +58,7 @@ class NewsController extends BaseController
 
             array_push($data_all, $data);
         }
-        DB::table($news->getTable())->insert($data_all);
+        DB::table((new News())->getTable())->insert($data_all);
     }
 
 }
