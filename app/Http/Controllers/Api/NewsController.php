@@ -25,6 +25,7 @@ class NewsController extends BaseController
      */
     public static function get_news_contents()
     {
+        $news=new News();
         #http://www.coindog.com/type/jinse/lives
         $accessKey = 'a15badd5fd7418f6ad49629792d4a51b';
         $secretKey = '5687d270949a5acc';
@@ -47,6 +48,9 @@ class NewsController extends BaseController
         if (empty($json)) return false;
         $data_all = [];
         foreach ($json['list'][0]['lives'] as $k => &$v) {
+
+            $is_exists=$news->where('news_id',$v['id'])->first();
+            if($is_exists) continue;
             preg_match('/【(.*?)】/is', $v['content'], $result);
             $data = array(
                 'nid'=>1,
@@ -55,10 +59,9 @@ class NewsController extends BaseController
                 'time' => $v['created_at'],
                 'title' => $result[1] ?? '',
             );
-
             array_push($data_all, $data);
         }
-        DB::table((new News())->getTable())->insert($data_all);
+        DB::table($news->getTable())->insert($data_all);
     }
 
 }
