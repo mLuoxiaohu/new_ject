@@ -452,7 +452,7 @@ class GameController extends BaseController
                     ->first(['kid', 'periods', 'number', 'time', 'next_time', 'adds']);
                 if (true) {  // $value['abbr'] != 'hk6'
                     $rows[$key]['periods'] = $arr['periods'];
-                    $rows[$key]['number'] = $arr['number'];
+                    $rows[$key]['number'] = explode(',',$arr['number']);
                     if (in_array($arr['kid'], [18, 37, 38, 40])) {
                         $sxNumber = $this->getLhcOpenInfo($arr['adds']);
                     } else {
