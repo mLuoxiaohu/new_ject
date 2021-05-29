@@ -588,9 +588,9 @@ class GameController extends BaseController
             if ($info) {
                 foreach ($info as $key => &$v) {
                     $ex=explode('|', $v['adds']);
-                    $v['sx']=$ex[0];
-                    $v['wx']=$ex[1];
-                    $v['color']=$ex[2];
+                    $v['sx']=explode(',',$ex[0]);
+                    $v['wx']=explode(',',$ex[1]);
+                    $v['color']=explode(',',$ex[2]);
                     unset($info[$key]['adds']);
                     $v['number'] = explode(',', $v['number']);
                 }
