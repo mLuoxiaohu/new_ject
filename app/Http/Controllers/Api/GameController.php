@@ -587,6 +587,11 @@ class GameController extends BaseController
                 ->limit($limit)->get(['periods', 'number', 'adds', 'time'])->toArray();
             if ($info) {
                 foreach ($info as $key => &$v) {
+                    $ex=explode('|', $v['adds']);
+                    $v['sx']=$ex[0];
+                    $v['wx']=$ex[1];
+                    $v['color']=$ex[2];
+                    unset($info[$key]['adds']);
                     $v['number'] = explode(',', $v['number']);
                 }
             }
