@@ -190,7 +190,7 @@ class GameController extends BaseController
                     ->orderBy('id', 'desc')
                     ->first(['kid', 'periods', 'number', 'time', 'next_time', 'adds']);
                 $rows[$key]['periods'] = $arr['periods'];
-                $rows[$key]['number'] = explode(',',$arr['number']);
+                $rows[$key]['number'] = explode(',', $arr['number']);
                 if (in_array($arr['kid'], [18, 37, 38, 40])) {
                     $sxNumber = $this->getLhcOpenInfo($arr['adds']);
                 } else {
@@ -344,11 +344,11 @@ class GameController extends BaseController
                 ->first(['periods', 'number', 'time', 'next_time']);
 
             $row['periods'] = $arr['periods'];
-            $user=$this->authInit()->id();
-            if($user){
-                $row['is_store']=false;
+            $user = $this->authInit()->id();
+            if ($user) {
+                $row['is_store'] = false;
                 $result = $store->where(['lottery_id' => $id, 'uid' => $this->authInit()->id()])->first();
-                if($result) $row['is_store']=true;
+                if ($result) $row['is_store'] = true;
             }
             $row['number'] = explode(",", $arr['number']);
             if (empty($row) || empty($arr)) return $this->_error(self::DATA_NULL);
@@ -359,7 +359,7 @@ class GameController extends BaseController
                 if ($row['abbr'] == 'xjp' || $row['abbr'] == 'amlhc' || $row['abbr'] == 'hk6' || $row['abbr'] == 'bjkl8' || $row['abbr'] == 'twlh') {
                     $row['down'] = $this->timeCal($arr, '', true);
                 }
-                if($row['down']<=0) $row['number']='';
+                if ($row['down'] <= 0) $row['number'] = '';
             } else {
                 $prev = date('d', $arr['time']);  // record 4
                 $sxNumber = $this->getLhcTime($arr['number']); // record
@@ -403,8 +403,8 @@ class GameController extends BaseController
     public function cateGamesList(Cate $cate)
     {
         try {
-            $result = $cate->with(['kind'=>function($sql){
-                $sql->where('none',0);
+            $result = $cate->with(['kind' => function ($sql) {
+                $sql->where('none', 0);
             }])->get();
             return $this->_success($result);
         } catch (\Exception $ex) {
@@ -452,7 +452,7 @@ class GameController extends BaseController
                     ->first(['kid', 'periods', 'number', 'time', 'next_time', 'adds']);
                 if (true) {  // $value['abbr'] != 'hk6'
                     $rows[$key]['periods'] = $arr['periods'];
-                    $rows[$key]['number'] = explode(',',$arr['number']);
+                    $rows[$key]['number'] = explode(',', $arr['number']);
                     if (in_array($arr['kid'], [18, 37, 38, 40])) {
                         $sxNumber = $this->getLhcOpenInfo($arr['adds']);
                     } else {
@@ -587,10 +587,10 @@ class GameController extends BaseController
                 ->limit($limit)->get(['periods', 'number', 'adds', 'time'])->toArray();
             if ($info) {
                 foreach ($info as $key => &$v) {
-                    $ex=explode('|', $v['adds']);
-                    $v['sx']=explode(',',$ex[0]);
-                    $v['wx']=explode(',',$ex[1]);
-                    $v['color']=explode(',',$ex[2]);
+                    $ex = explode('|', $v['adds']);
+                    $v['sx'] = explode(',', $ex[0]);
+                    $v['wx'] = explode(',', $ex[1]);
+                    $v['color'] = explode(',', $ex[2]);
                     unset($info[$key]['adds']);
                     $v['number'] = explode(',', $v['number']);
                 }
@@ -775,7 +775,8 @@ class GameController extends BaseController
      * @param false $xjp 是否为新加坡 bool
      * @return false|int
      */
-    private function timeCal($arr, $type, $xjp = false){
+    private function timeCal($arr, $type, $xjp = false)
+    {
         if ($xjp) {
             // 单独计算新加坡彩
             $nextTime = $arr['next_time'];
@@ -871,11 +872,12 @@ class GameController extends BaseController
     }
 
     //计算时间倒计时
-    private function timeCal1($arr,$type, $xjp=false){
+    private function timeCal1($arr, $type, $xjp = false)
+    {
         if ($xjp) {
             // 单独计算新加坡彩
             $nextTime = $arr['next_time'];
-            return $nextTime-time() > 0 ? $nextTime-time(): 0;
+            return $nextTime - time() > 0 ? $nextTime - time() : 0;
         }
         $count = count($type);
         $new = time();
@@ -883,84 +885,84 @@ class GameController extends BaseController
         switch ($count) {
             case 4:
                 //第一阶段时间范围
-                $jd1 = explode('-',$type[0]);
+                $jd1 = explode('-', $type[0]);
                 //第二阶段时间范围
-                $jd2 = explode('-',$type[1]);
+                $jd2 = explode('-', $type[1]);
                 //第一阶段时间戳
-                $jd1_start = strtotime(date('Y-m-d H:i:s',strtotime($jd1[0])));
-                $jd1_end = strtotime(date('Y-m-d H:i:s',strtotime($jd1[1])));
+                $jd1_start = strtotime(date('Y-m-d H:i:s', strtotime($jd1[0])));
+                $jd1_end = strtotime(date('Y-m-d H:i:s', strtotime($jd1[1])));
                 //第二阶段时间戳
-                $jd2_start = strtotime(date('Y-m-d H:i:s',strtotime($jd2[0])));
-                $jd2_end = strtotime(date('Y-m-d H:i:s',strtotime($jd2[1])));
+                $jd2_start = strtotime(date('Y-m-d H:i:s', strtotime($jd2[0])));
+                $jd2_end = strtotime(date('Y-m-d H:i:s', strtotime($jd2[1])));
                 //现在时间戳
-                if($new>=$jd1_start && $new<=$jd1_end){
-                    if(($arr['time']+$type[2])>time()){
-                        $down = ($arr['time']+$type[2])-time()-15;
-                    }else{
+                if ($new >= $jd1_start && $new <= $jd1_end) {
+                    if (($arr['time'] + $type[2]) > time()) {
+                        $down = ($arr['time'] + $type[2]) - time() - 15;
+                    } else {
                         $down = 0;
                     }
-                }else if($new>$jd2_start){
-                    if(($arr['time']+$type[3])>time()){
-                        $down = ($arr['time']+$type[3])-time()-15;
-                    }else{
-                        $down = 0;
-                    }
-
-                }else if( $new<$jd2_end){
-                    if(($arr['time']+$type[3])>time()){
-                        $down = ($arr['time']+$type[3])-time()-15;
-                    }else{
+                } else if ($new > $jd2_start) {
+                    if (($arr['time'] + $type[3]) > time()) {
+                        $down = ($arr['time'] + $type[3]) - time() - 15;
+                    } else {
                         $down = 0;
                     }
 
-                }else{
+                } else if ($new < $jd2_end) {
+                    if (($arr['time'] + $type[3]) > time()) {
+                        $down = ($arr['time'] + $type[3]) - time() - 15;
+                    } else {
+                        $down = 0;
+                    }
+
+                } else {
                     //明天开始时间 - 今晚结束时间
                     $down = $jd1_start - $new;
 
                 }
                 break;
             case 2:
-                $jd1 = explode('-',$type[0]);
+                $jd1 = explode('-', $type[0]);
                 //第一阶段时间戳
-                $jd1_start = strtotime(date('Y-m-d H:i:s',strtotime($jd1[0])));
-                $jd1_end = strtotime(date('Y-m-d H:i:s',strtotime($jd1[1])));
+                $jd1_start = strtotime(date('Y-m-d H:i:s', strtotime($jd1[0])));
+                $jd1_end = strtotime(date('Y-m-d H:i:s', strtotime($jd1[1])));
 
-                if($jd1_end-$jd1_start>0){
-                    if($new>=$jd1_start && $new<=$jd1_end){
-                        if(($arr['time']+$type[1])>time()){
-                            $down = ($arr['time']+$type[1])-time()-15;
-                        }else{
+                if ($jd1_end - $jd1_start > 0) {
+                    if ($new >= $jd1_start && $new <= $jd1_end) {
+                        if (($arr['time'] + $type[1]) > time()) {
+                            $down = ($arr['time'] + $type[1]) - time() - 15;
+                        } else {
                             $down = 0;
                         }
-                    }else{
+                    } else {
                         //用第二天的开始时间减去现在的时间 算出剩余开奖时间
-                        $next = strtotime('+1 day',strtotime(date('Y-m-d H:i:s',$jd1_start)));
+                        $next = strtotime('+1 day', strtotime(date('Y-m-d H:i:s', $jd1_start)));
                         $down = $next - $new;
                     }
-                }else{
-                    if($new>=$jd1_start){
-                        if(($arr['time']+$type[1])>time()){
-                            $down = ($arr['time']+$type[1])-time()-15;
-                        }else{
+                } else {
+                    if ($new >= $jd1_start) {
+                        if (($arr['time'] + $type[1]) > time()) {
+                            $down = ($arr['time'] + $type[1]) - time() - 15;
+                        } else {
                             $down = 0;
                         }
-                    }else if($new<=$jd1_end){
+                    } else if ($new <= $jd1_end) {
 
-                        if(($arr['time']+$type[1])>time()){
-                            $down = ($arr['time']+$type[1])-time()-15;
-                        }else{
+                        if (($arr['time'] + $type[1]) > time()) {
+                            $down = ($arr['time'] + $type[1]) - time() - 15;
+                        } else {
                             $down = 0;
                         }
-                    }else{
+                    } else {
                         $down = $jd1_start - $new;
                     }
                 }
 
                 break;
             case 1:
-                if(($arr['time']+$type[0])>time()){
-                    $down = ($arr['time']+$type[0])-time()-15;
-                }else{
+                if (($arr['time'] + $type[0]) > time()) {
+                    $down = ($arr['time'] + $type[0]) - time() - 15;
+                } else {
                     $down = 0;
                 }
                 break;
