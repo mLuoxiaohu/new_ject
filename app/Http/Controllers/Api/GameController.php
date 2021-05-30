@@ -593,6 +593,7 @@ class GameController extends BaseController
                     $v['color'] = explode(',', $ex[2]);
                     unset($info[$key]['adds']);
                     $v['number'] = explode(',', $v['number']);
+                    $v['time'] =date('Y-m-d H:i:s',$v['time']);
                 }
             }
             return $this->_success($info);
