@@ -526,7 +526,6 @@ class GameController extends BaseController
                 foreach ($info as $key => &$v) {
                     $v->number = explode(',', $v->number);
                     for ($i=0;$i<count($v->number);$i++){
-
                         if((int)$v->number[$i] % 2 == 0) {
                             $str='双';
                             if(isset($round[$i]['single'])) {
@@ -548,7 +547,6 @@ class GameController extends BaseController
                     }
                 }
             }
-
             if ($info) return $this->_success(['round'=>$round,'info' => $info, 'abbr' => $row['abbr'], 'name' => $row['name'], 'code' => $row['code']]);
             return $this->_error();
         } catch (\Exception $ex) {
