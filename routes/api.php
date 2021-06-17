@@ -46,8 +46,6 @@ Route::get('leave_message_list', "UserController@leave_message_list");
 Route::get('about', "IndexController@about");
 #关于我们添加（后台功能）
 Route::post('about_add', "IndexController@about_add");
-
-
 /*******************游戏列表********************/
 #游戏类型
 Route::get('game_type', "GameController@game_type");

@@ -519,10 +519,21 @@ class GameController extends BaseController
                     ->limit($limit)->get();
             }
             $row = $this->kind->where('id', $id)->first(['abbr', 'name', 'code']);
+            $round=[];
+            if ($info){
+                $round=[];
+                #规则 查出的期数排序大小
+                foreach ($info as $key => &$v) {
+                    $v->number = explode(',', $v->number);
+                    for ($i=0;$i<count($v->number);$i++){
+                        $str='单';
+                        if($v->number[$i] % 2 == 0) $str='双';
+                        array_push($round[$i],$str);
+                    }
+                }
+            }
 
-            if ($info) foreach ($info as $key => &$v) $v->number = explode(',', $v->number);
-
-            if ($info) return $this->_success(['info' => $info, 'abbr' => $row['abbr'], 'name' => $row['name'], 'code' => $row['code']]);
+            if ($info) return $this->_success(['round'=>$round,'info' => $info, 'abbr' => $row['abbr'], 'name' => $row['name'], 'code' => $row['code']]);
             return $this->_error();
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
