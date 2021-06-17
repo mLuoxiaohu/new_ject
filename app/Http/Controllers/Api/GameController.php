@@ -526,10 +526,25 @@ class GameController extends BaseController
                 foreach ($info as $key => &$v) {
                     $v->number = explode(',', $v->number);
                     for ($i=0;$i<count($v->number);$i++){
-                        $str='单';
-                        if($v->number[$i] % 2 == 0) $str='双';
-                        if(!isset($round[$i])) $round[$i]=[];
-                        array_push($round[$i],$str);
+
+                        if((int)$v->number[$i] % 2 == 0) {
+                            $str='双';
+                            if(isset($round[$i]['single'])) {
+                                $round[$i]['single']+=1;
+                            }else{
+                                $round[$i]['single']=1;
+                            }
+                        }else{
+                            $str='单';
+                            if(isset($round[$i]['double'])) {
+                                $round[$i]['double']+=1;
+                            }else{
+                                $round[$i]['double']=1;
+                            }
+                        }
+                        if(!isset($round[$i]['number'])) $round[$i]['number']=[];
+                        $round[$i]['name']='第'.($i+1).'球';
+                        array_push($round[$i]['number'],$str);
                     }
                 }
             }
