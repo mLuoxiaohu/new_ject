@@ -528,6 +528,7 @@ class GameController extends BaseController
                     for ($i=0;$i<count($v->number);$i++){
                         $str='单';
                         if($v->number[$i] % 2 == 0) $str='双';
+                        if(!isset($round[$i])) $round[$i]=[];
                         array_push($round[$i],$str);
                     }
                 }
