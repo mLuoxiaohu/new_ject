@@ -504,7 +504,7 @@ class GameController extends BaseController
      */
     public function getPerRecord()
     {
-        try {
+//        try {
             $limit = $this->input->get('num', 20);
             $id = $this->input->get('id');
             if (empty($id)) return $this->_error(self::PARAM_FAIL);
@@ -527,7 +527,6 @@ class GameController extends BaseController
                 #规则 查出的期数排序大小
                 foreach ($info as $key => &$v) {
                     $v->number = explode(',', $v->number);
-
                     $content = '';
                     for ($i = 0; $i < count($v->number); $i++) {
                         switch ($id) {
@@ -537,9 +536,10 @@ class GameController extends BaseController
                             case 28:
                             case 30:
                             case 39:#飞艇
-                                if ($i <= 5) {
+                                if ($i <= 4) {
+//                                    echo $i;
                                     $one_num = (int)$v->number[$i]; #1号
-                                    $two_num = (int)$v->number[count($v->number) - $i]; #10号
+                                    $two_num = (int)$v->number[count($v->number) - ($i+1)]; #10号
                                     $res = $one_num > $two_num ? '龙' : '虎';
                                     if ($res == '龙') {
                                         if (isset($long_hu[$i]['long'])) {
@@ -555,8 +555,7 @@ class GameController extends BaseController
                                         }
                                     }
                                     if (!isset($long_hu[$i]['long_or_hu'])) $long_hu[$i]['long_or_hu'] = [];
-                                    array_push($long_hu[$i]['long_or_hu'], $content);
-
+                                    if(!empty($res))  array_push($long_hu[$i]['long_or_hu'], $res);
                                 }
                                 #14～27 大 0~13 小
                                 $content = (int)$v->number[$i] > 5 ? '大' : '小';
@@ -641,7 +640,6 @@ class GameController extends BaseController
                                 $round[$i]['double'] = 1;
                             }
                         }
-
                         if (!isset($round[$i]['number'])) $round[$i]['number'] = [];
                         $round[$i]['name'] = '第' . ($i + 1) . '球';
                         $min_max[$i]['name'] = '第' . ($i + 1) . '球';
@@ -649,11 +647,11 @@ class GameController extends BaseController
                     }
                 }
             }
-            if ($info) return $this->_success(['round' => $round, 'info' => $info, 'abbr' => $row['abbr'], 'name' => $row['name'], 'code' => $row['code']]);
+            if ($info) return $this->_success(['long_hu'=>$long_hu,'dx'=>$min_max,'round' => $round, 'info' => $info, 'abbr' => $row['abbr'], 'name' => $row['name'], 'code' => $row['code']]);
             return $this->_error();
-        } catch (\Exception $ex) {
-            return $this->_error($ex->getMessage());
-        }
+//        } catch (\Exception $ex) {
+//            return $this->_error($ex->getMessage());
+//        }
     }
 
 
