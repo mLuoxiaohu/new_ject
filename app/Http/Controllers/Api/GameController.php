@@ -519,35 +519,137 @@ class GameController extends BaseController
                     ->limit($limit)->get();
             }
             $row = $this->kind->where('id', $id)->first(['abbr', 'name', 'code']);
-            $round=[];
-            if ($info){
-                $round=[];
+            $round = [];
+            if ($info) {
+                $round = [];
+                $min_max = [];
+                $long_hu = [];
                 #规则 查出的期数排序大小
                 foreach ($info as $key => &$v) {
                     $v->number = explode(',', $v->number);
-                    for ($i=0;$i<count($v->number);$i++){
-                        if((int)$v->number[$i] % 2 == 0) {
-                            $str='双';
-                            if(isset($round[$i]['single'])) {
-                                $round[$i]['single']+=1;
+
+                    $content = '';
+                    for ($i = 0; $i < count($v->number); $i++) {
+                        switch ($id) {
+                            case 14:
+                            case 15:
+                            case 16:
+                            case 28:
+                            case 30:
+                            case 39:#飞艇
+                                if ($i <= 5) {
+                                    $one_num = (int)$v->number[$i]; #1号
+                                    $two_num = (int)$v->number[count($v->number) - $i]; #10号
+                                    $res = $one_num > $two_num ? '龙' : '虎';
+                                    if ($res == '龙') {
+                                        if (isset($long_hu[$i]['long'])) {
+                                            $long_hu[$i]['long'] += 1;
+                                        } else {
+                                            $long_hu[$i]['long'] = 1;
+                                        }
+                                    } else {
+                                        if (isset($long_hu[$i]['hu'])) {
+                                            $long_hu[$i]['hu'] += 1;
+                                        } else {
+                                            $long_hu[$i]['hu'] = 1;
+                                        }
+                                    }
+                                    if (!isset($long_hu[$i]['long_or_hu'])) $long_hu[$i]['long_or_hu'] = [];
+                                    array_push($long_hu[$i]['long_or_hu'], $content);
+
+                                }
+                                #14～27 大 0~13 小
+                                $content = (int)$v->number[$i] > 5 ? '大' : '小';
+                                break;
+                            case 18:
+                            case 37:
+                            case 38:
+                            case 40:#六合
+                                $content = (int)$v->number[$i] > 26 ? '大' : '小';
+                                break;
+                            case 26:
+                            case 27:
+                            case 29:
+                            case 32: #澳洲幸运5 or 8
+                            $content = (int)$v->number[$i] >= 11 ? '大' : '小';
+                            break;
+                            case 35:
+                            case 25:#广东11选5
+                            if((int)$v->number[$i] ==11){
+                                $content='和';
                             }else{
-                                $round[$i]['single']=1;
+                                $content = (int)$v->number[$i] > 5 ? '大' : '小';
                             }
-                        }else{
-                            $str='单';
-                            if(isset($round[$i]['double'])) {
-                                $round[$i]['double']+=1;
-                            }else{
-                                $round[$i]['double']=1;
+                            break;
+                            case 22:
+                            case 23: #福彩排列3
+                            $content = (int)$v->number[$i] > 4 ? '大' : '小';
+                                break;
+                            case 10:
+                            case 11: #幸运农场
+                            $content = (int)$v->number[$i] > 11 ? '大' : '小';
+                            break;
+                            case 9:
+                            case 21:
+                            case 33:
+                            case 34: #快三
+                            $content = (int)$v->number[$i] > 3 ? '大' : '小';
+                            break;
+                            case 7:
+                            case 8:
+                            case 12:
+                            case 13: #时时彩
+                            $content = (int)$v->number[$i] > 4 ? '大' : '小';
+                            break;
+                            case 1:
+                            case 2:
+                            case 5:
+                            case 6:
+                            case 41: #28开奖
+                            $content = (int)$v->number[$i] > 4 ? '大' : '小';
+                            break;
+                        }
+                        if (!empty($content)) {
+                            if ($content == '大') {
+                                if (isset($min_max[$i]['big'])) {
+                                    $min_max[$i]['big'] += 1;
+                                } else {
+                                    $min_max[$i]['big'] = 1;
+                                }
+                            } else {
+                                if (isset($min_max[$i]['small'])) {
+                                    $min_max[$i]['small'] += 1;
+                                } else {
+                                    $min_max[$i]['small'] = 1;
+                                }
+                            }
+                            if (!isset($min_max[$i]['big_or_small'])) $min_max[$i]['big_or_small'] = [];
+                            array_push($min_max[$i]['big_or_small'], $content);
+                        }
+                        if ((int)$v->number[$i] % 2 == 0) {
+                            $str = '双';
+                            if (isset($round[$i]['single'])) {
+                                $round[$i]['single'] += 1;
+                            } else {
+                                $round[$i]['single'] = 1;
+                            }
+                        } else {
+                            $str = '单';
+                            if (isset($round[$i]['double'])) {
+                                $round[$i]['double'] += 1;
+                            } else {
+                                $round[$i]['double'] = 1;
                             }
                         }
-                        if(!isset($round[$i]['number'])) $round[$i]['number']=[];
-                        $round[$i]['name']='第'.($i+1).'球';
-                        array_push($round[$i]['number'],$str);
+
+                        if (!isset($round[$i]['number'])) $round[$i]['number'] = [];
+                        $round[$i]['name'] = '第' . ($i + 1) . '球';
+                        $min_max[$i]['name'] = '第' . ($i + 1) . '球';
+                        array_push($round[$i]['number'], $str);
                     }
                 }
             }
-            if ($info) return $this->_success(['round'=>$round,'info' => $info, 'abbr' => $row['abbr'], 'name' => $row['name'], 'code' => $row['code']]);
+            if ($info) return $this->_success(['round' => $round, 'info' => $info, 'abbr' => $row['abbr'], 'name' => $row['name'], 'code' => $row['code']]);
             return $this->_error();
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
@@ -618,7 +720,7 @@ class GameController extends BaseController
                     $v['color'] = explode(',', $ex[2]);
                     unset($info[$key]['adds']);
                     $v['number'] = explode(',', $v['number']);
-                    $v['time'] =date('Y-m-d',$v['time']);
+                    $v['time'] = date('Y-m-d', $v['time']);
                 }
             }
             return $this->_success($info);
