@@ -598,6 +598,7 @@ class GameController extends BaseController
                             case 8:
                             case 12:
                             case 13: #时时彩
+                            case 31:
                             $content = (int)$v->number[$i] > 4 ? '大' : '小';
                             break;
                             case 1:
