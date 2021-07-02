@@ -244,7 +244,10 @@ class GameController extends BaseController
             $id = $this->input->get('id');
             $type = $this->input->get('type');
             if (empty($id) || empty($type)) return $this->_error(self::PARAM_FAIL);
-            $list = $yc->where(['kid' => $id, 'type' => $type])->with('cole')->limit($limit)->get(['type', 'qi_start', 'qi_end', 'value', 'bonus', 'state']);
+            $list = $yc->where(['kid' => $id, 'type' => $type])
+                ->with('cole')->limit($limit)
+                ->orderBy('id','desc')
+                ->get(['type', 'qi_start', 'qi_end', 'value', 'bonus', 'state']);
             if ($list) return $this->_success($list);
             return $this->_error();
         } catch (\Exception $ex) {
