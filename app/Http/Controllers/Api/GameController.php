@@ -259,7 +259,7 @@ class GameController extends BaseController
     }
 
     /**
-     * @desc 六合彩专版查询
+     * @desc 六合彩专版查询 hhhh
      * @method get
      * @route /lh_special
      * @return \Illuminate\Http\JsonResponse
