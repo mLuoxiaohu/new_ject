@@ -247,8 +247,11 @@ class GameController extends BaseController
             $list = $yc->where(['kid' => $id, 'type' => $type])
                 ->with('cole')->limit($limit)
                 ->orderBy('id','desc')
-                ->get(['type', 'qi_start', 'qi_end', 'value', 'bonus', 'state']);
-            if ($list) return $this->_success($list);
+                ->get(['type', 'qi_start', 'qi_end', 'value', 'bonus', 'state'])->toArray();
+            if ($list) {
+                foreach ($list as $k=>&$v)$v['value']=explode(',',$v);
+                return $this->_success($list);
+            }
             return $this->_error();
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
