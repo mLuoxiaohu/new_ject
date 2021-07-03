@@ -248,9 +248,8 @@ class GameController extends BaseController
                 ->with('cole')->limit($limit)
                 ->orderBy('id','desc')
                 ->get(['type', 'qi_start', 'qi_end', 'value', 'bonus', 'state'])->toArray();
-            var_dump($list);die;
-            if (!empty($list)) {
-                foreach ($list as $k=>&$v)$v['value']=explode(',',$v);
+            if (count($list)) {
+                foreach ($list as $k=>&$v)$v['value']=explode(',',$v['value']);
                 return $this->_success($list);
             }
             return $this->_error();
