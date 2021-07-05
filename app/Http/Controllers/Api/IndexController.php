@@ -77,7 +77,7 @@ class IndexController extends BaseController
      * @route /carousel_list
      * @return \Illuminate\Http\JsonResponse
      */
-    public function Carousel(Slide $slide)
+    public function carousel(Slide $slide)
     {
         try {
             $carousel = $slide->where('state', 1)

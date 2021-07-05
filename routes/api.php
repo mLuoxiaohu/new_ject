@@ -58,7 +58,7 @@ Route::get('game_yc_type', "GameController@yucolle");
 #首页游戏列表
 Route::get('game_list', "IndexController@game_list");
 #首页轮播
-Route::get('carousel_list', "IndexController@Carousel");
+Route::get('carousel_list', "IndexController@carousel");
 #首页新闻列表
 Route::get('news_list', "IndexController@newsList");
 #更多新闻
