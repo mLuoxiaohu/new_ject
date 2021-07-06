@@ -369,21 +369,23 @@ class BaseController extends Controller
 
 
     /**
-     * @desc 发送短信
+     * @desc
      * @param $mobile
+     * @param $code
      * @return mixed
      */
-    protected function sendMsg($mobile)
+    protected function sendMsg($mobile, $code)
     {
-        $code = Cache::get($mobile);
-        if (!$code) {
-            $code = rand(1000, 9999);
-            Cache::add($mobile, $code, 60); //60
-        }
-        $content = "【柒柒科技】您的验证码：{$code} 有效期60秒请尽快使用。";
-        $account = config('site.account');
-        $url = config('site.msg_url');
-        $password = strtoupper(md5(config('site.msg_secret')));
+//        $code = Cache::get($mobile);
+//        if (!$code) {
+//            $code = rand(1000, 9999);
+//            Cache::add($mobile, $code, 80); //60
+//        }
+        $secret = '234ym8bp';
+        $content = "【济南龙筱文化】您的验证码：{$code} 有效期60秒请尽快使用。";
+        $account = 'OT00348';
+        $url = "https://dx.ipyy.net/smsJson.aspx";
+        $password = strtoupper(md5($secret));
         $body = array(
             'action' => 'send',
             'userid' => rand(1, 999),

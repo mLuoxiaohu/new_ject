@@ -527,11 +527,7 @@ class UserController extends BaseController
             if (!$this->BaseValidator($input, $param, $message, $error)) return $this->_error($error);
             $mobile = $input->get('mobile');
             $type = $input->get('type','');
-            #start:上线以后打开一下注释代码
-//            $re=$this->sendMsg($mobile);
-//            if($re->returnstatus =='Faild') return  $this->_error($re->message);
-//            return $this->_success([]);
-            #end:结束
+
             /*********分割**********/
             #start:上线以后注释以下代码
             $id = $this->authInit()->id();
@@ -543,18 +539,24 @@ class UserController extends BaseController
             if (!$code) {
                 $code = rand(1000, 9999);
                 if($id && $type == 1) {
-                    Cache::add($mobile . $id, $code, 60); //60
+                    Cache::add($mobile . $id, $code, 70); //60
                 } else {
-                    Cache::add($mobile, $code, 60); //60
+                    Cache::add($mobile, $code, 70); //60
                 }
             }
-            if($type == 1){
-                $content = "【柒柒科技】您的正在修改手机号码，请注意不要随意透露验证码，本次验证码为：{$code} 有效期60秒请尽快使用。";
-            }else{
-                $content = "【柒柒科技】您的验证码：{$code} 有效期60秒请尽快使用。";
-            }
+            #start:上线以后打开一下注释代码
+            $re=$this->sendMsg($mobile,$code);
+            if($re->returnstatus =='Faild') return  $this->_error($re->message);
 
-            return $this->_success(['code' => $code], $content);
+            return $this->_success();
+            #end:结束
+//            if($type == 1){
+//                $content = "【柒柒科技】您的正在修改手机号码，请注意不要随意透露验证码，本次验证码为：{$code} 有效期60秒请尽快使用。";
+//            }else{
+//                $content = "【柒柒科技】您的验证码：{$code} 有效期60秒请尽快使用。";
+//            }
+
+//            return $this->_success(['code' => $code], $content);
             #end:结束
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
