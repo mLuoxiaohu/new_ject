@@ -51,8 +51,8 @@ class ConfController  extends AdminController
         $form->text('name','配置名称');
         $form->text('key','键');
         $states = [
-            'on'  => ['value' => '0', 'text' => '正常', 'color' => 'primary'],
-            'off' => ['value' => '1', 'text' => '禁止', 'color' => 'default'],
+            'on'  => ['value' => '1', 'text' => '正常', 'color' => 'primary'],
+            'off' => ['value' => '2', 'text' => '禁止', 'color' => 'default'],
         ];
         $form->switch('state', '状态')->states($states);
         $form->text('value','值');
