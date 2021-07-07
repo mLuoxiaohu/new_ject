@@ -22,7 +22,7 @@ class ConfController  extends AdminController
         $grid = new Grid(new Config());
         $grid->column('id', 'ID')->sortable();
         $grid->column('name','配置名称')->editable('text');
-        $grid->column('key','键名称')->editable('text');
+        $grid->column('key','键')->editable('text');
         $states = [
             'on'  => ['value' => '1', 'text' => '正常', 'color' => 'primary'],
             'off' => ['value' => '2', 'text' => '禁止', 'color' => 'default'],
@@ -49,13 +49,13 @@ class ConfController  extends AdminController
     {
         $form = new Form(new Config());
         $form->text('name','配置名称');
-        $form->text('key','配置键');
+        $form->text('key','键');
         $states = [
             'on'  => ['value' => '0', 'text' => '正常', 'color' => 'primary'],
             'off' => ['value' => '1', 'text' => '禁止', 'color' => 'default'],
         ];
         $form->switch('state', '状态')->states($states);
-        $form->text('value','采集域名');
+        $form->text('value','值');
         return $form;
     }
 }
