@@ -20,7 +20,7 @@ class LotteryController extends AdminController
      */
     protected function grid(){
 
-        $grid = new Grid(new kind());
+        $grid = new Grid(new Kind());
 
         $grid->column('id', 'ID')->sortable();
         $grid->column('name','彩种名称')->editable('text');

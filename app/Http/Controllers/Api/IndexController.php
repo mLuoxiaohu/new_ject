@@ -83,7 +83,9 @@ class IndexController extends BaseController
             $carousel = $slide->where('state', 1)
                 ->orderBy('id', 'desc')
                 ->get();
-            return $this->_success($carousel);
+
+
+            return $this->_success(array('carousel'=>$carousel,''));
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
         }
