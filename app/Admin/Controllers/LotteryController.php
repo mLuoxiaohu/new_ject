@@ -7,7 +7,7 @@ use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
-use App\Http\Model\kind;
+use App\Http\Model\Kind;
 class LotteryController extends AdminController
 {
     protected function title()
