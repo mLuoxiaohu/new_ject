@@ -24,5 +24,5 @@ Route::group([
 
     $router->resource('/user_news', NewsListController::class);
     $router->resource('/lottery_yuce', LotteryYcController::class);
-    $router->resource('/conf', LotteryYcController::class);
+    $router->resource('/conf', ConfController::class);
 });

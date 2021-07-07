@@ -8,7 +8,6 @@ use App\Http\Model\Config;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
-use Illuminate\Database\Eloquent\Model;
 
 class ConfController  extends AdminController
 {
