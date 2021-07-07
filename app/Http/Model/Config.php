@@ -26,6 +26,7 @@ class Config extends Model
      * @return mixed
      */
     public static  function  get_config($name){
-       return self::where('key',$name)->value('value');
+        $value=self::where('key',$name)->value('value');
+       return  $value ? json_decode($value,true) : false;
     }
 }

@@ -83,9 +83,8 @@ class IndexController extends BaseController
             $carousel = $slide->where('state', 1)
                 ->orderBy('id', 'desc')
                 ->get();
-
-
-            return $this->_success(array('carousel'=>$carousel,''));
+            $cement=Config::get_config('cement');
+            return $this->_success(array('carousel'=>$carousel,'cement'=>$cement));
         } catch (\Exception $ex) {
             return $this->_error($ex->getMessage());
         }
@@ -164,7 +163,7 @@ class IndexController extends BaseController
     public function about()
     {
         try {
-            $result = json_decode(Config::get_config('about'), true);
+            $result = Config::get_config('about');
             if ($result) return $this->_success($result);
             return $this->_error();
         } catch (\Exception $ex) {
