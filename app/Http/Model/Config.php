@@ -27,6 +27,6 @@ class Config extends Model
      */
     public static  function  get_config($name){
         $value=self::where(['key'=>$name,'state'=>1])->value('value');
-       return  $value ? json_decode($value,true) : false;
+       return  $value ? json_decode($value,true) : '暂无内容';
     }
 }
