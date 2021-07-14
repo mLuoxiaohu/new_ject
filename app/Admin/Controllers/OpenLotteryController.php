@@ -42,7 +42,7 @@ class OpenLotteryController extends AdminController
             $filter->disableIdFilter();
             $lot=(new Kind())->pluck('name','id');
             // 在这里添加字段过滤器
-            $filter->where('kid', '彩种')->radio($lot);
+            $filter->column('kid', '彩种')->radio($lot);
         });
         return $grid;
     }
