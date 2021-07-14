@@ -589,6 +589,7 @@ class GameController extends BaseController
                             break;
                             case 22:
                             case 23: #福彩排列3
+                            case 26: #福彩排列3
                             $content = (int)$v->number[$i] > 4 ? '大' : '小';
                                 break;
                             case 10:
