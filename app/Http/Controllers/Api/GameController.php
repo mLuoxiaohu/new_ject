@@ -573,7 +573,6 @@ class GameController extends BaseController
                             case 40:#六合
                                 $content = (int)$v->number[$i] > 26 ? '大' : '小';
                                 break;
-                            case 26:
                             case 27:
                             case 29:
                             case 32: #澳洲幸运5 or 8
