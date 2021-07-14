@@ -32,7 +32,7 @@ class LotteryController extends AdminController
             'off' => ['value' => '1', 'text' => '禁止', 'color' => 'default'],
         ];
         $grid->column('none', '状态')->switch($states);
-        $grid->column('domain','采集域名');
+        $grid->column('domain','采集域名')->editable('text');
         $video = [
             'on'  => ['value' => '0', 'text' => '无', 'color' => 'primary'],
             'off' => ['value' => '1', 'text' => '有', 'color' => 'default'],
@@ -60,6 +60,7 @@ class LotteryController extends AdminController
         $form = new Form(new User);
         $form->text('name','用户昵称');
         $form->text('mobile','用户手机号');
+        $form->text('domain','采集域名');
         $states = [
             'on'  => ['value' => '0', 'text' => '正常', 'color' => 'primary'],
             'off' => ['value' => '1', 'text' => '禁止', 'color' => 'default'],

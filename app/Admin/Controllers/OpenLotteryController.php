@@ -31,7 +31,7 @@ class OpenLotteryController extends AdminController
             return "<img src='{$avatar}' width='80' height='80'>";
         });
         $grid->column('periods','开奖期号');
-        $grid->column('number','开奖号码')->label('warning');
+        $grid->column('number','开奖号码');
         $grid->column('kind.info','开奖信息')->limit(30);
         $grid->column('time','开奖时间')->display(function ($time){
            return date('Y-m-d H:i:s',$time);
