@@ -23,9 +23,7 @@ class OpenLotteryController extends AdminController
      */
     protected function grid(){
         $grid = new Grid(new Record);
-        $lot=(new Kind())->pluck('name','id');
-        // 在这里添加字段过滤器
-        $grid->column('kid', '彩种id')->filter($lot);
+
         $grid->column('id', 'ID')->sortable();
         $grid->column('kind.name','彩种名称');
         $grid->column('kind.icon','图标')->display(function ($avatar){
@@ -42,6 +40,9 @@ class OpenLotteryController extends AdminController
         $grid->filter(function($filter){
             // 去掉默认的id过滤器
             $filter->disableIdFilter();
+            $lot=(new Kind())->pluck('name','id');
+            // 在这里添加字段过滤器
+            $filter->like('kid', '彩种')->select($lot);
         });
         return $grid;
     }
