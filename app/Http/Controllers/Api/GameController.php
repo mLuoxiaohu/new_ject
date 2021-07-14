@@ -320,6 +320,7 @@ class GameController extends BaseController
                         $rows[$key]['down'] = 0;
                     }
                 }
+//                $value['new_time']=date('Y-m-d H:i:s');
             }
             if ($rows) return $this->_success($rows);
             return $this->_error('未获取到内容');
