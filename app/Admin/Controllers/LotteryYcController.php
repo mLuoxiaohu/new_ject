@@ -51,7 +51,7 @@ class LotteryYcController extends AdminController
         $grid->column('value', '预测内容')->label('danger');
         $grid->column('bonus', '中奖内容')->label('primary');
         $grid->column('state', '中奖状态')->label('warning');
-        $grid->column('time', "创建时间");
+        $grid->column('create_time', "创建时间");
         $grid->actions(function (Grid\Displayers\Actions $actions) {
             #去掉显示按钮
             $actions->disableView();

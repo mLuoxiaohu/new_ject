@@ -23,7 +23,8 @@ class OpenLotteryController extends AdminController
      */
     protected function grid(){
         $grid = new Grid(new Record);
-
+        $grid->model()->orderBy('id', 'desc');
+        $grid->model()->orderBy('time', 'desc');
         $grid->column('id', 'ID')->sortable();
         $grid->column('kind.name','彩种名称');
         $grid->column('kind.icon','图标')->display(function ($avatar){
