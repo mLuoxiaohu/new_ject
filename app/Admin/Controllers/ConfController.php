@@ -34,7 +34,7 @@ class ConfController  extends AdminController
             // 去掉默认的id过滤器
             $filter->disableIdFilter();
             // 在这里添加字段过滤器
-            $filter->like('state', '状态')->radio([
+            $filter->equal('state', '状态')->radio([
                 ''   => '所有',
                 1    => '正常',
                 2    => '禁用',

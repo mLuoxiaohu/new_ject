@@ -60,7 +60,7 @@ class LotteryYcController extends AdminController
             // 去掉默认的id过滤器
             $filter->disableIdFilter();
             // 在这里添加字段过滤器
-            $filter->like('state', '开奖状态')->radio([
+            $filter->equal('state', '开奖状态')->radio([
                 '1'=>'待开奖',
                 '2'=>'中奖',
                 '3'=>'未中奖'
@@ -68,7 +68,7 @@ class LotteryYcController extends AdminController
 
             $lot=(new Kind())->pluck('name','id');
             // 在这里添加字段过滤器
-            $filter->like('kid', '彩种')->radio($lot);
+            $filter->equal('kid', '彩种')->radio($lot);
         });
         return $grid;
     }

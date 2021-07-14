@@ -42,7 +42,7 @@ class RuleController extends AdminController{
             // 在这里添加字段过滤器
            $list= Kind::pluck('name','id');
             // 在这里添加字段过滤器
-            $filter->like('kid', '彩种')->radio($list);
+            $filter->equal('kid', '彩种')->radio($list);
         });
         $grid->disableActions();
         return $grid;

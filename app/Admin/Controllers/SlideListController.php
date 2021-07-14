@@ -44,7 +44,7 @@ class SlideListController extends AdminController
             // 去掉默认的id过滤器
             $filter->disableIdFilter();
             // 在这里添加字段过滤器
-            $filter->like('kid', '彩种')->radio([
+            $filter->equal('kid', '彩种')->radio([
                 '1'=>'展示',
                 '2'=>'隐藏'
             ]);
