@@ -37,13 +37,18 @@ class OpenLotteryController extends AdminController
         });
         $grid->disableActions();
 
-        $grid->filter(function($filter){
-            // 去掉默认的id过滤器
-            $filter->disableIdFilter();
+
+        $grid->selector(function (Grid\Tools\Selector $selector) {
             $lot=(new Kind())->pluck('name','id');
-            // 在这里添加字段过滤器
-            $filter->like('kid', '彩种')->select($lot);
+            $selector->select('kid', '彩种', $lot);
         });
+//        $grid->filter(function($filter){
+//            // 去掉默认的id过滤器
+//            $filter->disableIdFilter();
+//            $lot=(new Kind())->pluck('name','id');
+//            // 在这里添加字段过滤器
+//            $filter->like('kid', '彩种')->select($lot);
+//        });
         return $grid;
     }
 
