@@ -573,7 +573,6 @@ class GameController extends BaseController
                             case 40:#六合
                                 $content = (int)$v->number[$i] > 26 ? '大' : '小';
                                 break;
-                            case 27:
                             case 29:
                             case 32: #澳洲幸运5 or 8
                             $count_unm=array_sum($v->number);
@@ -631,6 +630,7 @@ class GameController extends BaseController
                                 break;
                             case 10:
                             case 11: #幸运农场
+                            case 27:
                             $content = (int)$v->number[$i] > 11 ? '大' : '小';
                             break;
                             case 9:
