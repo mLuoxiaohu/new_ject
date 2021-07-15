@@ -581,6 +581,7 @@ class GameController extends BaseController
                                 }else{
                                     $content = (int)$count_unm > 810 ? '大' : '小';
                                 }
+
                               $min_max[$key]['big_or_small']=$content;
                             #单双
                             if ($count_unm % 2 == 0) {
