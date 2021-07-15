@@ -576,7 +576,45 @@ class GameController extends BaseController
                             case 27:
                             case 29:
                             case 32: #澳洲幸运5 or 8
-                            $content = (int)$v->number[$i] >= 11 ? '大' : '小';
+                            $count_unm=array_sum($v->number);
+                                if( $count_unm== 810){
+                                    $content='和';
+                                }else{
+                                    $content = (int)$v->number[$i] > 810 ? '大' : '小';
+                                }
+
+                            if ($content == '大') {
+                                if (isset($min_max[$i]['big'])) {
+                                    $min_max[0]['big'] += 1;
+                                } else {
+                                    $min_max[0]['big'] = 1;
+                                }
+                            } else {
+                                if (isset($min_max[$i]['small'])) {
+                                    $min_max[0]['small'] += 1;
+                                } else {
+                                    $min_max[0]['small'] = 1;
+                                }
+                            }
+                              $min_max[0]['name'] = '总和大小';
+                              $min_max[0]['big_or_small']=$content;
+                            #单双
+                            if ($count_unm % 2 == 0) {
+                                $str = '双';
+                                if (isset($round[0]['single'])) {
+                                    $round[0]['single'] += 1;
+                                } else {
+                                    $round[0]['single'] = 1;
+                                }
+                            } else {
+                                $str = '单';
+                                if (isset($round[$i]['double'])) {
+                                    $round[0]['double'] += 1;
+                                } else {
+                                    $round[0]['double'] = 1;
+                                }
+                            }
+                            $round[0]['number']=$str;
                             break;
                             case 35:
                             case 25:#广东11选5
@@ -616,6 +654,8 @@ class GameController extends BaseController
                             $content = (int)$v->number[$i] > 4 ? '大' : '小';
                             break;
                         }
+                        if(in_array($id,[27,29,32])) continue;
+                        #大小
                         if (!empty($content)) {
                             if ($content == '大') {
                                 if (isset($min_max[$i]['big'])) {
@@ -633,6 +673,7 @@ class GameController extends BaseController
                             if (!isset($min_max[$i]['big_or_small'])) $min_max[$i]['big_or_small'] = [];
                             array_push($min_max[$i]['big_or_small'], $content);
                         }
+                        #单双
                         if ((int)$v->number[$i] % 2 == 0) {
                             $str = '双';
                             if (isset($round[$i]['single'])) {
