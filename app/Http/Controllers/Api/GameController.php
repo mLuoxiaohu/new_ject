@@ -583,13 +583,14 @@ class GameController extends BaseController
                                 }
                               $min_max[$key]['count_number']=$count_unm;
                               $min_max[$key]['big_or_small']=$content;
+
                             #单双
                             if ($count_unm % 2 == 0) {
                                 $str = '双';
                             } else {
                                 $str = '单';
                             }
-                            $round[$key]['number']=$str;
+                            $min_max[$key]['number']=$str;
                             break;
                             case 35:
                             case 25:#广东11选5
