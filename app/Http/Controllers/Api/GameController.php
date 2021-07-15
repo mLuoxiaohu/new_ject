@@ -640,7 +640,13 @@ class GameController extends BaseController
                                 } else {
                                     $min_max[$i]['big'] = 1;
                                 }
-                            } else {
+                            } else if($content=='和'){
+                                if (isset($min_max[$i]['with'])) {
+                                    $min_max[$i]['with'] += 1;
+                                } else {
+                                    $min_max[$i]['with'] = 1;
+                                }
+                            }else{
                                 if (isset($min_max[$i]['small'])) {
                                     $min_max[$i]['small'] += 1;
                                 } else {
