@@ -580,31 +580,31 @@ class GameController extends BaseController
                                 if( $count_unm== 810){
                                     $content='和';
                                 }else{
-                                    $content = (int)$v->number[$i] > 810 ? '大' : '小';
+                                    $content = (int)$count_unm > 810 ? '大' : '小';
                                 }
 
                             if ($content == '大') {
-                                if (isset($min_max[$i]['big'])) {
-                                    $min_max[0]['big'] += 1;
+                                if (isset($min_max[$key]['big'])) {
+                                    $min_max[$key]['big'] += 1;
                                 } else {
-                                    $min_max[0]['big'] = 1;
+                                    $min_max[$key]['big'] = 1;
                                 }
                             } else {
-                                if (isset($min_max[$i]['small'])) {
-                                    $min_max[0]['small'] += 1;
+                                if (isset($min_max[$key]['small'])) {
+                                    $min_max[$key]['small'] += 1;
                                 } else {
-                                    $min_max[0]['small'] = 1;
+                                    $min_max[$key]['small'] = 1;
                                 }
                             }
-                              $min_max[0]['name'] = '总和大小';
-                              $min_max[0]['big_or_small']=$content;
+                              $min_max[$key]['name'] = '总和大小';
+                              $min_max[$key]['big_or_small']=$content;
                             #单双
                             if ($count_unm % 2 == 0) {
                                 $str = '双';
-                                if (isset($round[0]['single'])) {
-                                    $round[0]['single'] += 1;
+                                if (isset($round[$key]['single'])) {
+                                    $round[$key]['single'] += 1;
                                 } else {
-                                    $round[0]['single'] = 1;
+                                    $round[$key]['single'] = 1;
                                 }
                             } else {
                                 $str = '单';
