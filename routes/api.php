@@ -21,7 +21,8 @@ use Illuminate\Support\Facades\Route;
  */
 #测试
 Route::get('news_cntent', "NewsController@get_news_contents");
-
+#首页
+Route::get('restore', "GameController@restore_data");
 #首页
 Route::get('index', "IndexController@index");
 #登陆
