@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Record extends Model
 {
     protected $table='record';
-
+    public $timestamps= false;
     protected $fillable=['adds'];
     public function kind()
     {
