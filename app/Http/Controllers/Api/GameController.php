@@ -49,7 +49,8 @@ class GameController extends BaseController
 
    public function restore_data(){
         $list=$this->open->whereIn('kid',[18, 37, 38, 40])->select('id','number','adds')->get();
-        $color_style=["red", "red", "blue", "blue", "green", "green", "red", "red", "blue", "blue",
+        $color_style=[
+            "red", "red", "blue", "blue", "green", "green", "red", "red", "blue", "blue",
             "green", "red", "red", "blue", "blue", "green", "green", "red", "red", "blue",
             "green", "green", "red", "red", "blue", "blue", "green", "green", "red", "red",
             "blue", "green", "green", "red", "red", "blue", "blue", "green", "green", "red",
@@ -57,7 +58,7 @@ class GameController extends BaseController
         foreach ($list as $k=>$v){
               $ex=explode(',',$v->number);
               $str='';
-              for($i=0;$i<count($ex);$i++) $str.=$color_style[$ex[$i]].",";
+              for($i=0;$i<count($ex);$i++) $str.=$color_style[((int)$ex[$i] - 1)].",";
               $str=$v->adds."|".trim($str,',');
               $v->update(['adds'=>$str]);
         }
