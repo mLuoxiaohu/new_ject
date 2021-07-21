@@ -48,7 +48,7 @@ class GameController extends BaseController
     }
 
    public function restore_data(){
-        $list=$this->open->whereIn('kid',[18, 37, 38, 40])->select('id','number','adds')->get();
+        $list=$this->open->whereIn('kid',[18, 37, 38, 40])->select('periods','kid','id','number','adds')->get();
         $color_style=[
             "red", "red", "blue", "blue", "green", "green", "red", "red", "blue", "blue",
             "green", "red", "red", "blue", "blue", "green", "green", "red", "red", "blue",
@@ -60,7 +60,23 @@ class GameController extends BaseController
               $str='';
               for($i=0;$i<count($ex);$i++) $str.=$color_style[((int)$ex[$i] - 1)].",";
               $str=$v->adds."|".trim($str,',');
-              $v->update(['adds'=>$str]);
+              $per="";
+              switch ($v->kid){
+                  case 18: #hk
+                     $per= str_replace('2021',"",$v->periods);
+                      break;
+                  case 37: #xjp
+                      $per= str_replace('2021',"",$v->periods);
+                      break;
+                  case 38: #am
+                      $per=$v->periods;
+                      break;
+                  case 40: #tw
+                       $per= str_replace('110000',"",$v->periods);
+                      break;
+              }
+              if($per == $v->periods) continue;
+              $v->update(['adds'=>$str,'periods'=>trim($per)]);
         }
        return $this->_success();
    }
