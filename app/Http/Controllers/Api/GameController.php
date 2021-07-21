@@ -55,7 +55,7 @@ class GameController extends BaseController
             "green", "green", "red", "red", "blue", "blue", "green", "green", "red", "red",
             "blue", "green", "green", "red", "red", "blue", "blue", "green", "green", "red",
             "blue", "blue", "green", "green", "red", "red", "blue", "blue", "green"];
-        foreach ($list as $k=>$v){
+        foreach ($list as $k=>&$v){
               $ex=explode(',',$v->number);
               $str='';
               for($i=0;$i<count($ex);$i++) $str.=$color_style[((int)$ex[$i] - 1)].",";

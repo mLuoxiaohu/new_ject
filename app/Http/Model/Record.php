@@ -10,7 +10,7 @@ class Record extends Model
 {
     protected $table='record';
     public $timestamps= false;
-    protected $fillable=['adds'];
+    protected $fillable=['adds','periods'];
     public function kind()
     {
         return $this->hasOne(Kind::class,'id','kid');
