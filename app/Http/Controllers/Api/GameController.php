@@ -60,23 +60,23 @@ class GameController extends BaseController
               $str='';
               for($i=0;$i<count($ex);$i++) $str.=$color_style[((int)$ex[$i] - 1)].",";
               $str=$v->adds."|".trim($str,',');
-              $per="";
-              switch ($v->kid){
-                  case 18: #hk
-                     $per= str_replace('2021',"",$v->periods);
-                      break;
-                  case 37: #xjp
-                      $per= str_replace('2021',"",$v->periods);
-                      break;
-                  case 38: #am
-                      $per=$v->periods;
-                      break;
-                  case 40: #tw
-                       $per= str_replace('110000',"",$v->periods);
-                      break;
-              }
+              $per=$v->periods;
+//              switch ($v->kid){
+//                  case 18: #hk
+//                     $per= str_replace('2021',"",$v->periods);
+//                      break;
+//                  case 37: #xjp
+//                      $per= str_replace('2021',"",$v->periods);
+//                      break;
+//                  case 38: #am
+//                      $per=$v->periods;
+//                      break;
+//                  case 40: #tw
+//                       $per= str_replace('110000',"",$v->periods);
+//                      break;
+//              }
               if($per == $v->periods) continue;
-              $v->update(['adds'=>$str,'periods'=>trim($per)]);
+              $v->update(['adds'=>$str,'periods'=>(int)trim($per)]);
         }
        return $this->_success();
    }
