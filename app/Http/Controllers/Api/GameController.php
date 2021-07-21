@@ -75,7 +75,7 @@ class GameController extends BaseController
 //                       $per= str_replace('110000',"",$v->periods);
 //                      break;
 //              }
-              if($per == $v->periods) continue;
+             // if($per == $v->periods) continue;
               $v->update(['adds'=>$str,'periods'=>(int)trim($per)]);
         }
        return $this->_success();
