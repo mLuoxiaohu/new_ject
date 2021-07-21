@@ -55,11 +55,29 @@ class GameController extends BaseController
             "green", "green", "red", "red", "blue", "blue", "green", "green", "red", "red",
             "blue", "green", "green", "red", "red", "blue", "blue", "green", "green", "red",
             "blue", "blue", "green", "green", "red", "red", "blue", "blue", "green"];
+
+       $nim = [
+           "土", "土", "木", "木", "火", "火", "金", "金", "水", "水", "木", "木", "火", "火", "土", "土", "水",
+    "水", "木", "木", "金", "金", "土", "土", "水", "水", "火", "火", "金", "金", "土", "土", "木", "木",
+    "火", "火", "金", "金", "水", "水", "木", "木", "火", "火", "土", "土", "水", "水", "木",
+    "木"];
+
+       $sx = [
+           "牛", "鼠", "猪", "狗", "鸡", "猴", "羊", "马", "蛇", "龙", "兔", "虎", "牛", "鼠", "猪", "狗", "鸡",
+    "猴", "羊", "马", "蛇", "龙", "兔", "虎", "牛", "鼠", "猪", "狗", "鸡", "猴", "羊", "马", "蛇",
+    "龙", "兔", "虎", "牛", "鼠", "猪", "狗", "鸡", "猴", "羊", "马", "蛇", "龙", "兔", "虎", "牛",
+];
         foreach ($list as $k=>&$v){
               $ex=explode(',',$v->number);
-              $str='';
-              for($i=0;$i<count($ex);$i++) $str.=$color_style[((int)$ex[$i] - 1)].",";
-              $str=$v->adds."|".trim($str,',');
+              $color='';
+              $sx_str='';
+              $nim_str='';
+              for($i=0;$i<count($ex);$i++) {
+                  $color.=$color_style[((int)$ex[$i] - 1)].",";
+                  $sx_str.=$sx[((int)$ex[$i] - 1)].",";
+                  $nim_str.=$nim[((int)$ex[$i] - 1)].",";
+              }
+              $str=trim($sx_str,',')."|".trim($nim_str,',')."|".trim($color,',');
               $per=$v->periods;
 //              switch ($v->kid){
 //                  case 18: #hk
@@ -76,7 +94,7 @@ class GameController extends BaseController
 //                      break;
 //              }
              // if($per == $v->periods) continue;
-              $v->update(['adds'=>$str,'periods'=>(int)trim($per)]);
+              $v->update(['adds'=>trim($str),'periods'=>(int)trim($per)]);
         }
        return $this->_success();
    }
